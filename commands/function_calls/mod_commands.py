@@ -229,4 +229,59 @@ def remove_character(ingame_name):
         cursor.close()
 
         return('``` Character: ' + ingame_name_lower + ' was deleted from SAO.```')
+    
+def add_beasts_to_server(beasts_name, base_level, base_hp,
+                        base_str, base_def, base_spd, 
+                        base_dex, hp_growth_rate, 
+                        str_growth_rate, def_growth_rate, 
+                        spd_growth_rate, dex_growth_rate, 
+                        beasts_description):
+        sqliteConnection = sqlite3.connect('characterSheet.db')
+        cursor = sqliteConnection.cursor()
+        beasts_name_lower = beasts_name.lower()
+        query = """INSERT INTO beastdb(beasts_name, base_level,
+                        base_hp, base_str, base_def, base_spd, 
+                        base_dex, hp_growth_rate, 
+                        str_growth_rate, def_growth_rate, 
+                        spd_growth_rate, dex_growth_rate, 
+                        beasts_description) 
+                        VALUES 
+                                (?,?,?,?,?,?,?,?,?,?,?,?,?)""" 
+        cursor.execute(query, (beasts_name, base_level, base_hp,
+                       base_str, base_def, base_spd, 
+                       base_dex, hp_growth_rate, 
+                       str_growth_rate, def_growth_rate, 
+                       spd_growth_rate, dex_growth_rate, 
+                       beasts_description))
+                    
+        sqliteConnection.commit()
+        cursor.close()
+        sqliteConnection.close()
+        return('``` beast: ' + beasts_name_lower + ' has been added to the game.```')
 
+def remove_beasts_from_server(beasts_name):
+    if(calc.validate_fields(beasts_name) == True):
+        beasts_name_lower = beasts_name.lower()
+        sqliteConnection = sqlite3.connect('characterSheet.db')
+        cursor = sqliteConnection.cursor()
+        query = "DELETE FROM beastdb WHERE beasts_name = ?;"
+        cursor.execute(query, beasts_name_lower)
+        sqliteConnection.commit()
+        cursor.close()
+        sqliteConnection.close()
+
+        return('``` beast: ' + beasts_name_lower + ' was deleted from the server.```')
+     
+def remove_beasts_from_player(beasts_nickname):
+    if(calc.validate_fields(beasts_nickname) == True):
+        beasts_nickname_lower = beasts_nickname.lower()
+        sqliteConnection = sqlite3.connect('characterSheet.db')
+        cursor = sqliteConnection.cursor()
+        query = "DELETE FROM characters_beast WHERE beasts_nickname = ? AND character_name;"
+        cursor.execute(query, beasts_nickname_lower)
+        sqliteConnection.commit()
+        cursor.close()
+        sqliteConnection.close()
+
+        return('``` beast: ' + beasts_nickname_lower + ' was deleted from the server.```')
+    

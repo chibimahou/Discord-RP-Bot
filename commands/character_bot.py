@@ -14,6 +14,7 @@ import function_calls.stats as sta
 import function_calls.calc as mat
 import function_calls.mod_commands as mod
 import function_calls.combat as com
+import function_calls.pets as pet
 import function_calls.trade as tra
 import function_calls.mod_normal_commands as modnormal
 from discord.ext import commands
@@ -39,7 +40,7 @@ async def sync(self, ctx) -> None:
 async def addrole(ctx, member : discord.Member, role : discord.Role):
     await member.add_roles(role)
 
-
+#Syncs the Cardinal Bot so the new commands will show.
 @client.tree.command(name="hello", description="Hello!")
 async def hello(interaction: discord.Interaction):
         await client.tree.sync()
@@ -49,6 +50,9 @@ async def hello(interaction: discord.Interaction):
 async def test(interaction: discord.Interaction):
     await interaction.response.send_message(f"Hey {interaction.user.mention}! This is a slash command!" )
 
+#Search for and display character information
+#Use: input players character name. 
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="character")
 @app_commands.describe(character_name = "kirito!")
 async def character(interaction: discord.Interaction, character_name: str):
@@ -56,13 +60,18 @@ async def character(interaction: discord.Interaction, character_name: str):
         results = sta.check_character(character_name, discord_tag)
         await interaction.response.send_message(results)
 
+#Search for and display character information
+#Use: input players character name. 
+#Verification: Verifies user is a mod or owner.
 @client.tree.command(name="character_mod")
 @app_commands.describe(character_name = "kirito!")
 async def character_mod(interaction: discord.Interaction, character_name: str):
         results = modnormal.check_character_mods(character_name)
         await interaction.response.send_message(results)
 
-#Display Character stat screen.
+#Display Character stats.
+#Use: Input players character name.
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="stat_screen")
 @app_commands.describe(character_name = "Hello!")
 async def stat_screen(interaction: discord.Interaction, character_name: str):
@@ -71,7 +80,9 @@ async def stat_screen(interaction: discord.Interaction, character_name: str):
             await interaction.response.send_message(results)
 
 
-#Display Character stat screen.
+#Create a character for the server.
+#Use: Input players real first name, last name, character name, height, physique, age, birthday, bio and level.
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="add_character")
 @app_commands.describe(first_name="kirigaya", last_name="kazuto", ingame_name="Kirito", height="5'2\"", physique="muscular",  age="12", birthday="1/2/22", bio="A young boy who loves vrmmos.", level="1")
 async def add_Character(interaction: discord.Interaction, first_name:str, last_name:str, ingame_name:str, height:str, physique:str,  age:str, birthday:str, bio:str, level: str):
@@ -80,7 +91,9 @@ async def add_Character(interaction: discord.Interaction, first_name:str, last_n
             results = sta.add_character(first_name, last_name, ingame_name, height, physique, age, birthday, bio, level, discord_tag)
             await interaction.response.send_message(results)
 
-#Display Character stat screen.
+#Finish a battle to claim rewards. (Will recycle when we automate this.)
+#Use: Input players character name, mob name and number of enemies defeated.
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="finish_battle")
 @app_commands.describe(character_name="kirigaya", mob_name="kazuto", number_defeated="Kirito")
 async def finish_battle(interaction: discord.Interaction, character_name:str, mob_name:str, number_defeated:str):
@@ -89,7 +102,9 @@ async def finish_battle(interaction: discord.Interaction, character_name:str, mo
             results = spa.mob_drops(character_name, mob_name, number_defeated, discord_tag)
             await interaction.response.send_message(results)
 
-#Display Character stat screen.
+#Displays characters inventory.
+#Use: Input players character name.
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="inventory")
 @app_commands.describe(character_name = "Hello!")
 async def inventory(interaction: discord.Interaction, character_name: str):
@@ -97,7 +112,9 @@ async def inventory(interaction: discord.Interaction, character_name: str):
             results = inv.inventory(character_name)
             await interaction.response.send_message(results)
 
-#Display Character stat screen.
+#Equip new weapon and unequip current weapon.
+#Use: Input players character name and item to be equipped.
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="change_weapon")
 @app_commands.describe(character_name = "Hello!")
 async def change_weapon(interaction: discord.Interaction, character_name: str):
@@ -108,7 +125,9 @@ async def change_weapon(interaction: discord.Interaction, character_name: str):
         cursor.close()
         await interaction.response.send_message('```' + character_name + ' currently equipped weapon: ' + character_information[0][0] + '```')
 
-#Display Character stat screen.
+#Add item to players inventory
+#Use: Input player character name and items to be added (Seperate by ',' for multiple items.)
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="add_inventory")
 @app_commands.describe(character_name = "Kirito", items_to_add = "1,2")
 async def add_inventory(interaction: discord.Interaction, character_name: str, items_to_add: str):
@@ -116,14 +135,19 @@ async def add_inventory(interaction: discord.Interaction, character_name: str, i
             results = inv.add_inventory(character_name, items_to_add, discord_tag)
             await interaction.response.send_message(results)
 
-#Display Character stat screen.
+#Remove item to players inventory
+#Use: Input player character name and items to be added (Seperate by ',' for multiple items.)
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="remove_inventory")
 @app_commands.describe(character_name = "Hello!", items_to_remove = "1,2")
 async def remove_inventory(interaction: discord.Interaction, character_name: str, items_to_remove: str):
             discord_tag = interaction.user.id
             results = inv.remove_inventory(character_name, items_to_remove, discord_tag)
             await interaction.response.send_message(results)
-#Display Character stat screen.
+
+#Add skill to players character
+#Use: Input player character name, skill to be added and skills level.
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="add_skill")
 @app_commands.describe(character_name = "Kirito", skill_to_add = "Fishing", skill_level = "1")
 async def add_skill(interaction: discord.Interaction, character_name: str, skill_to_add: str, skill_level: str):
@@ -135,7 +159,9 @@ async def add_skill(interaction: discord.Interaction, character_name: str, skill
             else:    
                 await interaction.response.send_message('``` Sorry, ' + skill_to_add + ' is not in your inventory. ' + '```')
 
-#Display Character stat screen.
+#Remove skill to players character
+#Use: Input player character name, skill to be removed and skills level.
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="remove_skill")
 @app_commands.describe(character_name = "Hello!", skill_to_remove = "Fishing", levels_to_remove = "1")
 async def remove_skill(interaction: discord.Interaction, character_name: str, skill_to_remove: str, levels_to_remove: str):
@@ -146,7 +172,9 @@ async def remove_skill(interaction: discord.Interaction, character_name: str, sk
             else:    
                 await interaction.response.send_message('``` Sorry, ' + skill_to_remove + ' is not in your inventory. ' + '```')
 
-#Display Character stat screen.
+#Check players character experience to next level up
+#Use: Input player character name.
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="experience")
 @app_commands.describe(character_name = "Kirito", experience_to_add = "10")
 async def experience(interaction: discord.Interaction, character_name: str, experience_to_add: str):
@@ -154,7 +182,9 @@ async def experience(interaction: discord.Interaction, character_name: str, expe
             results = exp.experience(character_name, experience_to_add)
             await interaction.response.send_message(results)
 
-#Display Character stat screen. 
+#Add experience on players character and level up if they reach the next level up threshold
+#Use: Input player character name and experience to add.
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="add_experience")
 @app_commands.describe(character_name = "Hello!", experience_to_add = "20")
 async def add_experience(interaction: discord.Interaction, character_name: str, experience_to_add: str):
@@ -162,7 +192,9 @@ async def add_experience(interaction: discord.Interaction, character_name: str, 
             results = exp.add_experience(character_name, experience_to_add)
             await interaction.response.send_message(results)
 
-#Display Character stat screen.
+#REMOVE experience on players character and level down if they reach the previous level up threshold
+#Use: Input player character name and experience to remove.
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="remove_experience")
 @app_commands.describe(character_name = "Hello!", experience_to_remove = "20")
 async def remove_experience(interaction: discord.Interaction, character_name: str, experience_to_remove: str):
@@ -178,7 +210,9 @@ async def combat(interaction: discord.Interaction, character_name: str):
             results = com.combat(character_name)
             await interaction.response.send_message(results)
 
-#Display Character stat screen.
+#Add points to players character stats
+#Use: Input player character name stat to add points to and points to be added.
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="add_stat")
 @app_commands.describe(character_name = "Hello!", stat = "str", points_to_add = "2")
 async def add_stat(interaction: discord.Interaction, character_name: str, stat: str, points_to_add: str):
@@ -186,7 +220,9 @@ async def add_stat(interaction: discord.Interaction, character_name: str, stat: 
             results = sta.add_stats(character_name, stat, points_to_add, discord_tag)
             await interaction.response.send_message(results)
 
-#Display Character stat screen.
+#Remove points to players character stats
+#Use: Input player character name stat to remove points to and points to be removed.
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="remove_stat")
 @app_commands.describe(character_name = "Hello!", stat = "str", points_to_remove = "2")
 async def remove_stat(interaction: discord.Interaction, character_name: str, stat: str, points_to_remove: str):
@@ -194,7 +230,9 @@ async def remove_stat(interaction: discord.Interaction, character_name: str, sta
             results = sta.remove_stats(character_name, stat, points_to_remove, discord_tag)
             await interaction.response.send_message(results)
 
-#Display Character stat screen.
+#Add col to player characters inventory
+#Use: Input player character name and col to add.
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="add_col")
 @app_commands.describe(character_name = "Kirito", col_to_add = "20")
 async def add_col(interaction: discord.Interaction, character_name: str, col_to_add: str):
@@ -203,7 +241,9 @@ async def add_col(interaction: discord.Interaction, character_name: str, col_to_
             await interaction.response.send_message(results)
 
 
-#Display Character stat screen.
+#Remove col to player characters inventory
+#Use: Input player character name and col to remove.
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="remove_col")
 @app_commands.describe(character_name = "Kirito",  col_to_remove = "20")
 async def remove_col(interaction: discord.Interaction, character_name: str, col_to_remove: str):
@@ -211,7 +251,9 @@ async def remove_col(interaction: discord.Interaction, character_name: str, col_
             results = col.remove_col(character_name, col_to_remove)
             await interaction.response.send_message(results)
 
-#Display Character stat screen.
+#Return item information from the item database (Not weapons or armor).
+#Use: Input item to search for.
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="check_items")
 @app_commands.describe(item_name = "Healing potion")
 async def check_items(interaction: discord.Interaction, item_name: str):
@@ -222,7 +264,9 @@ async def check_items(interaction: discord.Interaction, item_name: str):
         character_information = cursor.execute("SELECT * FROM items WHERE item = '" + item_name_lower + "'").fetchall()
         await interaction.response.send_message('```' + 'The item you selected is: ' + character_information[0][1] + ' ' + character_information[0][2] + ' ' + character_information[0][3] + character_information[0][4] + '```')
 
-#Display Character stat screen.
+#Add sword_skill to player character
+#Use: Input player character name and sword_skill to add.
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="add_skills")
 @app_commands.describe(character_name = "Kirito", skill_name = "Vorpal Slash")
 async def add_skills(interaction: discord.Interaction,character_name: str, skill_name: str):
@@ -230,7 +274,9 @@ async def add_skills(interaction: discord.Interaction,character_name: str, skill
             results = ski.add_skills(character_name, skill_name)
             await interaction.response.send_message(results)
 
-#Display Character stat screen.
+#Remove sword_skill to player character
+#Use: Input player character name and sword_skill to remove.
+#Verification: Verifies player by discord tag.
 @client.tree.command(name="remove_skills")
 @app_commands.describe(character_name = "Kirito", skill_name = "Vorpal Strike")
 async def remove_skills(interaction: discord.Interaction, character_name: str, skill_name: str):
@@ -269,6 +315,15 @@ async def accept_or_decline_party_invite(interaction: discord.Interaction, invit
             discord_tag = interaction.user.id
             results = invi.accept_or_decline_party_invite(inviters_name, invitees_name, accept_or_decline)
             await interaction.response.send_message(results)
+
+#Display Character stat screen.
+@client.tree.command(name="add_beast")
+@app_commands.describe(character_name = "Kirito", pet_name = "baby_dragon", pet_nickname = "pina")
+async def add_beast(interaction: discord.Interaction, character_name: str, pet_name: str, pet_nickname: str):
+            discord_tag = interaction.user.id
+            results = pet.add_beast(character_name, pet_name, pet_nickname, discord_tag)
+            await interaction.response.send_message(results)
+
 
 #Display Character stat screen.
 @client.tree.command(name="request_trade")
@@ -334,6 +389,7 @@ async def remove_proficiency_skill(interaction: discord.Interaction, character_n
 @app_commands.describe(character_name = 'Kirito', floor = '1', area = 'something')
 async def spawn(interaction: discord.Interaction, character_name: str, floor: str, area: str):
         discord_tag = interaction.user.id
+        print(discord_tag)
         results = spa.spawn(floor, area)
         name = str(results[0][0])
         HealthPoints = str(results[0][1])
@@ -477,6 +533,41 @@ async def remove_weapon_from_game_mod(interaction: discord.Interaction, weapon_n
     else:
         await interaction.response.send_message("You do not have the right permission to use this command.")
 
+@client.tree.command(name="mod_add_beasts_to_game")
+@app_commands.describe(beasts_name = "Baby dragon", base_level = "1", base_hp = "50", 
+                       base_str = "5", base_def = "5", base_spd = "5", base_dex = "5",
+                       hp_growth_rate = "1", str_growth_rate = "1", def_growth_rate = "1",
+                       spd_growth_rate = "1", dex_growth_rate = "1",
+                       beasts_description = "A baby dragon born in the peaceful melo forest.")
+async def mod_add_beasts_to_game(interaction: discord.Interaction, beasts_name: str, 
+                                    base_level: str, base_hp: str, base_str: str, 
+                                    base_def: str, base_spd: str, base_dex: str, 
+                                    hp_growth_rate: str, str_growth_rate: str, 
+                                    def_growth_rate: str, spd_growth_rate: str, 
+                                    dex_growth_rate: str, beasts_description: str):
+    moderator_roles = [role for role in interaction.guild.roles if role.permissions.manage_messages]
+    allowed_roles = ['Executive Moderator', 'Owners']  
+    if mat.is_allowed(interaction.user.roles, allowed_roles):           
+        results = mod.add_beasts_to_server(beasts_name, base_level, base_hp,
+                                          base_str, base_def, base_spd, 
+                                          base_dex, hp_growth_rate, 
+                                          str_growth_rate, def_growth_rate, 
+                                          spd_growth_rate, dex_growth_rate, 
+                                          beasts_description)
+        await interaction.response.send_message(results)
+    else:
+        await interaction.response.send_message("You do not have the right permission to use this command.")
+
+@client.tree.command(name="mod_remove_beasts_from_game")
+@app_commands.describe(beasts_name = "Baby dragon")
+async def remove_weapon_from_game_mod(interaction: discord.Interaction, beasts_name: str):
+    moderator_roles = [role for role in interaction.guild.roles if role.permissions.manage_messages]
+    allowed_roles = ['Executive Moderator', 'Owners']  
+    if mat.is_allowed(interaction.user.roles, allowed_roles):           
+        results = mod.remove_beasts_from_server(beasts_name)
+        await interaction.response.send_message(results)
+    else:
+        await interaction.response.send_message("You do not have the right permission to use this command.")
 
 @client.tree.command(name="at_command", description="test")
 @app_commands.describe()
@@ -492,4 +583,4 @@ async def at_command(interaction: discord.Interaction):
         await interaction.response.send_message(f'{moderator_mentions} Please check the character stats')
   
 #Run the client.
-client.run("MTAwNjM4NTMzNDEwOTYyMjMzNA.G9Ln1_.z0jCVUjrATCwirU1EszdbSqobpcudcZ1helxmY")
+client.run("MTAwNjM4NTMzNDEwOTYyMjMzNA.GPSUfe.jLjJd71L07Di1-W74hwM0VXQcCO-u2qJil6-oI")

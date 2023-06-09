@@ -4,6 +4,7 @@ import array
 import random
 import re
 import math
+import hashlib
 import function_calls.inventory as inv
 import function_calls.skills as ski
 import function_calls.experience as exp
@@ -242,4 +243,8 @@ def is_allowed(member, allowed_roles):
                 temp2 = temp2 + 1
         temp = temp + 1
 
+def generate_key(strings):
+    concatenated_string = ''.join(strings)
+    hashed_key = hashlib.sha256(concatenated_string.encode()).hexdigest()
+    return hashed_key
     return False
