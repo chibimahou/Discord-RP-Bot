@@ -6,113 +6,113 @@ try:
     print("Successfully Connected to SQLite")
 
     sqlite_insert_query = """INSERT INTO stats
-                          (name, HP, STR, SPE, AGI, DEX, DEF, beginner_level, max_level)
+                          (name, HP, STR, SPE, DEX, DEF, beginner_level, col, xp, max_hp, max_str, max_def, max_spe, max_dex, max_level, max_xp)
                            VALUES 
-                          ('frenzy boar', 20, 20, 1, 1, 1, 5, 1, 4)"""
+                          ('frenzy boar', 20, 20, 1, 1, 5, 1, 50, 20, 5000, 50, 50, 50, 50, 4, 500)"""
 
     count = cursor.execute(sqlite_insert_query)
     sqliteConnection.commit()
 
     sqlite_insert_query = """INSERT INTO stats
-                          (name, HP, STR, SPE, AGI, DEX, DEF, beginner_level, max_level)
+                          (name, HP, STR, SPE, DEX, DEF, beginner_level, col, xp, max_hp, max_str, max_def, max_spe, max_dex, max_level, max_xp)
                            VALUES 
-                          ('dire wolf', 20, 25, 2, 1, 3, 3, 3, 8)"""
+                          ('dire wolf', 20, 25, 2, 3, 3, 3, 50, 20, 5000, 50, 50, 50, 50, 8, 500)"""
 
     count = cursor.execute(sqlite_insert_query)    
     sqliteConnection.commit()
 
     sqlite_insert_query = """INSERT INTO stats
-                          (name, HP, STR, SPE, AGI, DEX, DEF, beginner_level, max_level)
+                          (name, HP, STR, SPE, DEX, DEF, beginner_level, col, xp, max_hp, max_str, max_def, max_spe, max_dex, max_level, max_xp)
                            VALUES 
-                          ('large nepenthes', 20, 20, 1, 1, 1, 5, 1, 4)"""
+                          ('large nepenthes', 20, 20, 1, 1, 5, 1, 50, 20, 5000, 50, 50, 50, 50, 4, 500)"""
 
     count = cursor.execute(sqlite_insert_query)
     sqliteConnection.commit()
 
     sqlite_insert_query = """INSERT INTO stats
-                          (name, HP, STR, SPE, AGI, DEX, DEF, beginner_level, max_level)
+                          (name, HP, STR, SPE, DEX, DEF, beginner_level, col, xp, max_hp, max_str, max_def, max_spe, max_dex, max_level, max_xp)
                            VALUES 
-                          ('little nepenthes', 20, 25, 2, 1, 3, 3, 3, 8)"""
+                          ('little nepenthes', 20, 25, 2, 3, 3, 3, 50, 20, 5000, 50, 50, 50, 50, 8, 500)"""
 
     count = cursor.execute(sqlite_insert_query)    
     sqliteConnection.commit()
     
     sqlite_insert_query = """INSERT INTO stats
-                          (name, HP, STR, SPE, AGI, DEX, DEF, beginner_level, max_level)
+                          (name, HP, STR, SPE, DEX, DEF, beginner_level, col, xp, max_hp, max_str, max_def, max_spe, max_dex, max_level, max_xp)
                            VALUES 
-                          ('scavenger toad', 20, 20, 1, 1, 1, 5, 1, 4)"""
+                          ('scavenger toad', 20, 20, 1, 1, 5, 1, 50, 20, 5000, 50, 50, 50, 50, 4, 500)"""
 
     count = cursor.execute(sqlite_insert_query)
     sqliteConnection.commit()
 
     sqlite_insert_query = """INSERT INTO stats
-                          (name, HP, STR, SPE, AGI, DEX, DEF, beginner_level, max_level)
+                          (name, HP, STR, SPE, DEX, DEF, beginner_level, col, xp, max_hp, max_str, max_def, max_spe, max_dex, max_level, max_xp)
                            VALUES 
-                          ('cow', 20, 25, 2, 1, 3, 3, 3, 8)"""
+                          ('cow', 20, 25, 2, 3, 3, 3, 50, 20, 5000, 50, 50, 50, 50, 8, 500)"""
 
     count = cursor.execute(sqlite_insert_query)    
     sqliteConnection.commit()
     
     sqlite_insert_query = """INSERT INTO stats
-                          (name, HP, STR, SPE, AGI, DEX, DEF, beginner_level, max_level)
+                          (name, HP, STR, SPE, DEX, DEF, beginner_level, col, xp, max_hp, max_str, max_def, max_spe, max_dex, max_level, max_xp)
                            VALUES 
-                          ('white tailed buck', 20, 20, 1, 1, 1, 5, 1, 4)"""
+                          ('white tailed buck', 20, 20, 1, 1, 5, 1, 50, 20, 5000, 50, 50, 50, 50, 4, 500)"""
 
     count = cursor.execute(sqlite_insert_query)
     sqliteConnection.commit()
 
     sqlite_insert_query = """INSERT INTO stats
-                          (name, HP, STR, SPE, AGI, DEX, DEF, beginner_level, max_level)
+                          (name, HP, STR, SPE, DEX, DEF, beginner_level, col, xp, max_hp, max_str, max_def, max_spe, max_dex, max_level, max_xp)
                            VALUES 
-                          ('mountain troll', 20, 25, 2, 1, 3, 3, 3, 8)"""
+                          ('mountain troll', 20, 25, 2, 3, 3, 3, 50, 20, 5000, 50, 50, 50, 50, 8, 500)"""
 
     count = cursor.execute(sqlite_insert_query)    
     sqliteConnection.commit()
 
     sqlite_insert_query = """INSERT INTO stats
-                          (name, HP, STR, SPE, AGI, DEX, DEF, beginner_level, max_level)
+                          (name, HP, STR, SPE, DEX, DEF, beginner_level, col, xp, max_hp, max_str, max_def, max_spe, max_dex, max_level, max_xp)
                            VALUES 
-                          ('goat', 20, 25, 2, 1, 3, 3, 3, 8)"""
+                          ('goat', 20, 25, 2, 3, 3, 3, 50, 20, 5000, 50, 50, 50, 50, 8, 500)"""
 
     count = cursor.execute(sqlite_insert_query)    
     sqliteConnection.commit()
 
     sqlite_insert_query = """INSERT INTO stats
-                          (name, HP, STR, SPE, AGI, DEX, DEF, beginner_level, max_level)
+                          (name, HP, STR, SPE, DEX, DEF, beginner_level, col, xp, max_hp, max_str, max_def, max_spe, max_dex, max_level, max_xp)
                            VALUES 
-                          ('goblin', 20, 25, 2, 1, 3, 3, 3, 8)"""
+                          ('goblin', 20, 25, 2, 3, 3, 3, 50, 20, 5000, 50, 50, 50, 50, 8, 500)"""
 
     count = cursor.execute(sqlite_insert_query)    
     sqliteConnection.commit()
 
     sqlite_insert_query = """INSERT INTO stats
-                          (name, HP, STR, SPE, AGI, DEX, DEF, beginner_level, max_level)
+                          (name, HP, STR, SPE, DEX, DEF, beginner_level, col, xp, max_hp, max_str, max_def, max_spe, max_dex, max_level, max_xp)
                            VALUES 
-                          ('bat', 20, 25, 2, 1, 3, 3, 3, 8)"""
+                          ('bat', 20, 25, 2, 3, 3, 3, 50, 20, 5000, 50, 50, 50, 50, 8, 500)"""
 
     count = cursor.execute(sqlite_insert_query)    
     sqliteConnection.commit()
 
     sqlite_insert_query = """INSERT INTO stats
-                          (name, HP, STR, SPE, AGI, DEX, DEF, beginner_level, max_level)
+                          (name, HP, STR, SPE, DEX, DEF, beginner_level, col, xp, max_hp, max_str, max_def, max_spe, max_dex, max_level, max_xp)
                            VALUES 
-                          ('giant beetle', 20, 25, 2, 1, 3, 3, 3, 8)"""
+                          ('giant beetle', 20, 25, 2, 3, 3, 3, 50, 20, 5000, 50, 50, 50, 50, 8, 500)"""
 
     count = cursor.execute(sqlite_insert_query)    
     sqliteConnection.commit()
 
     sqlite_insert_query = """INSERT INTO stats
-                          (name, HP, STR, SPE, AGI, DEX, DEF, beginner_level, max_level)
+                          (name, HP, STR, SPE, DEX, DEF, beginner_level, col, xp, max_hp, max_str, max_def, max_spe, max_dex, max_level, max_xp)
                            VALUES 
-                          ('skeleton gladiator', 20, 25, 2, 1, 3, 3, 3, 8)"""
+                          ('skeleton gladiator', 20, 25, 2, 3, 3, 3, 50, 20, 5000, 50, 50, 50, 50, 8, 500)"""
 
     count = cursor.execute(sqlite_insert_query)    
     sqliteConnection.commit()
 
     sqlite_insert_query = """INSERT INTO stats
-                          (name, HP, STR, SPE, AGI, DEX, DEF, beginner_level, max_level)
+                          (name, HP, STR, SPE, DEX, DEF, beginner_level, col, xp, max_hp, max_str, max_def, max_spe, max_dex, max_level, max_xp)
                            VALUES 
-                          ('giant spider', 20, 25, 2, 1, 3, 3, 3, 8)"""
+                          ('giant spider', 20, 25, 2, 3, 3, 3, 50, 20, 5000, 50, 50, 50, 50, 8, 500)"""
 
     count = cursor.execute(sqlite_insert_query)    
     sqliteConnection.commit()

@@ -94,10 +94,12 @@ def add_character(first_name, last_name, ingame_name, height, physique,  age, bi
         sqliteConnection = sqlite3.connect('characterSheet.db')
         cursor = sqliteConnection.cursor()
         ingame_name_lower = ingame_name.lower()
+        values = [first_name.lower(), last_name.lower(), ingame_name_lower, str(discord_tag)]
+        unique_key = calc.generate_key(values)
         height_escape_characters = height.replace('\'', '.')
         height_escape_characters2 = height_escape_characters.replace('\"', '..')
-        print(str(height_escape_characters2))
-        character_information = cursor.execute("INSERT INTO charactersheets(firstName, lastName, nickname, height, size, age, birthday, playerStatus, guild, class, skillList, uniqueSkills, equipment, proficiencySkills, playerColor, inventory, bio, col, experience, level, str, def, spd, dex, discord_tag) VALUES ('" + first_name + "','" + last_name + "','" + ingame_name_lower + "','" + height_escape_characters2 + "','" + physique + "','" + age + "','" + birthday + "','normal','guild','class','','unique skills','bronze one handed sword', 'one handed sword:1', 'green', 'herb:1,bronze one handed sword:1','" + bio + "','100','0','" + level + "','5','5','5','5'" + ", '" + str(discord_tag) + "')")
+        print(unique_key)
+        character_information = cursor.execute("INSERT INTO charactersheets(firstName, lastName, nickname, height, size, age, birthday, playerStatus, guild, class, skillList, uniqueSkills, equipment, proficiencySkills, playerColor, inventory, bio, col, experience, level, str, def, spd, dex, discord_tag, unique_key, party_id) VALUES ('" + first_name + "','" + last_name + "','" + ingame_name_lower + "','" + height_escape_characters2 + "','" + physique + "','" + age + "','" + birthday + "','normal','guild','class','','unique skills','bronze one handed sword', 'one handed sword:1', 'green', 'herb:1,bronze one handed sword:1','" + bio + "','100','0','" + level + "','5','5','5','5'" + ", '" + str(discord_tag) + "', '" + unique_key + "', '\"\"')")
         sqliteConnection.commit()
         cursor.close()
 

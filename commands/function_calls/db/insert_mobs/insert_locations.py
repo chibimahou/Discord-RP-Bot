@@ -13,6 +13,14 @@ try:
     count = cursor.execute(sqlite_insert_query)  
     sqliteConnection.commit()
 
+    sqlite_insert_query = """INSERT INTO Location
+                          (floor, area, spawns)
+                           VALUES 
+                          (1, 'tranquil lake' , 'frenzy boar,dire wolf')"""
+
+    count = cursor.execute(sqlite_insert_query)  
+    sqliteConnection.commit()
+
     sqlite_insert_query  = """INSERT INTO Location
                        (floor, area, spawns)
                           Values

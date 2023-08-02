@@ -3,6 +3,7 @@ import sqlite3
 import os
 import re
 import function_calls.calc as calc
+import function_calls.query.query as que
 from discord.ext import commands
 from discord import app_commands
 from discord.utils import get
@@ -48,7 +49,7 @@ def remove_character_from_server(ingame_name):
         return('``` Character: ' + ingame_name_lower + ' was deleted from SAO.```')
 
 def add_item_to_server(item_catagory, item_name, item_description, item_rarity, dropped_by):
-        sqliteConnection = sqlite3.connect('characterSheet.db')
+        sqliteConnection = sqlite3.connect('equipment.db')
         cursor = sqliteConnection.cursor()
         item_catagory_lower = item_catagory.lower()
         item_name_lower = item_name.lower()
@@ -62,12 +63,12 @@ def add_item_to_server(item_catagory, item_name, item_description, item_rarity, 
 
 def update_item_in_server(character_name, field_to_update, updated_value):
     if(calc.validate_fields(field_to_update) and calc.validate_fields(updated_value)):
-        sqliteConnection = sqlite3.connect('characterSheet.db')
+        sqliteConnection = sqlite3.connect('equipment.db')
         cursor = sqliteConnection.cursor()
         field_to_update_lower = field_to_update.lower()
         updated_value_lower = updated_value.lower()
         character_name_lower = character_name.lower()
-        character_information = cursor.execute("UPDATE charactersheets SET " + field_to_update + " = '" + updated_value + "';")    
+        character_information = cursor.execute("UPDATE items SET " + field_to_update + " = '" + updated_value + "';")    
         sqliteConnection.commit()
         cursor.close()
 
@@ -75,7 +76,7 @@ def update_item_in_server(character_name, field_to_update, updated_value):
     return('``` You have input an invalid character```')
 
 def remove_item_from_server(item_catagory, item_name, item_description, item_rarity, dropped_by):
-        sqliteConnection = sqlite3.connect('characterSheet.db')
+        sqliteConnection = sqlite3.connect('equipment.db')
         cursor = sqliteConnection.cursor()
         item_catagory_lower = item_catagory.lower()
         item_name_lower = item_name.lower()
@@ -85,10 +86,10 @@ def remove_item_from_server(item_catagory, item_name, item_description, item_rar
         character_information = cursor.execute("DELETE FROM items WHERE item = '" + item_name_lower + "';")
         sqliteConnection.commit()
         cursor.close()
-        return('``` Item:: ' + item_name + ' has been removed to the game.```')
+        return('``` Item:: ' + item_name_lower + ' has been removed to the game.```')
 
 def add_weapon_to_server(weapon_name, weapon_description, weapon_rarity, how_to_obtain, base_power, additional_effects, crit_chance, weapon_material, weapon_attack_type, catagory):
-        sqliteConnection = sqlite3.connect('characterSheet.db')
+        sqliteConnection = sqlite3.connect('equipment.db')
         cursor = sqliteConnection.cursor()
         weapon_name_lower = weapon_name.lower()
         weapon_description_lower = weapon_description.lower()
@@ -96,29 +97,94 @@ def add_weapon_to_server(weapon_name, weapon_description, weapon_rarity, how_to_
         character_information = cursor.execute("INSERT INTO weapons(weapon_name, weapon_description, weapon_rarity, how_to_obtain, base_power, additional_effects, crit_chance, weapon_material, weapon_attack_type, catagory) VALUES ('" + str(weapon_name_lower) + "','" + str(weapon_description) + "','" + str(weapon_rarity_lower) + "','" + str(how_to_obtain) + "','" + str(base_power) + "','" + str(additional_effects) + "','" + str(crit_chance) + "','" + str(weapon_material) + "','" + str(weapon_attack_type) + "','" + str(catagory) + "')")     
         sqliteConnection.commit()
         cursor.close()
-        return('``` Weapon: ' + weapon_name + ' has been added to the game.```')
+        return('``` Weapon: ' + weapon_name_lower + ' has been added to the game.```')
 
 def remove_weapon_from_server(weapon_name):
-        sqliteConnection = sqlite3.connect('characterSheet.db')
+        sqliteConnection = sqlite3.connect('equipment.db')
         cursor = sqliteConnection.cursor()
         weapon_name_lower = weapon_name.lower()
-        character_information = cursor.execute("DELETE FROM weapons WHERE item = '" + weapon_name_lower + "';")
+        character_information = cursor.execute("DELETE FROM weapons WHERE weapon_name = '" + weapon_name_lower + "';")
         sqliteConnection.commit()
         cursor.close()
-        return('``` Weapon: ' + weapon_name + ' has been removed to the game.```')
+        return('``` Weapon: ' + weapon_name_lower + ' has been removed to the game.```')
         
+def add_armor_to_server(armor_name, armor_description, armor_rarity, how_to_obtain, base_defense, additional_effects, armor_material, catagory):
+        sqliteConnection = sqlite3.connect('equipment.db')
+        cursor = sqliteConnection.cursor()
+        armor_name_lower = armor_name.lower()
+        armor_description_lower = armor_description.lower()
+        armor_rarity_lower = armor_rarity.lower()
+        character_information = cursor.execute("""INSERT INTO 
+                                                        armor
+                                                                (armor_name, armor_description, 
+                                                                armor_rarity, how_to_obtain, 
+                                                                base_defense, additional_effects, 
+                                                                armor_material, catagory) 
+                                                                VALUES 
+                                                                        ('""" + str(armor_name_lower) + """','""" + 
+                                                                        str(armor_description_lower) + """','""" +
+                                                                        str(armor_rarity_lower) + """','""" + 
+                                                                        str(how_to_obtain) + """','""" + 
+                                                                        str(base_defense) + """','""" +                                                                         
+                                                                        str(additional_effects) + """','""" + 
+                                                                        str(armor_material) + """','""" + 
+                                                                        str(catagory) + """')""")     
+        sqliteConnection.commit()
+        cursor.close()
+        return('``` armor: ' + armor_name_lower + ' has been added to the game.```')
+
+def remove_armor_from_server(armor_name):
+        sqliteConnection = sqlite3.connect('equipment.db')
+        cursor = sqliteConnection.cursor()
+        armor_name_lower = armor_name.lower()
+        character_information = cursor.execute("DELETE FROM armor WHERE armor_name = '" + armor_name_lower + "';")
+        sqliteConnection.commit()
+        cursor.close()
+        return('``` armor: ' + armor_name_lower + ' has been removed to the game.```')
+
+def add_blacksmithing_material_to_server(material_name, material_description, material_rarity, how_to_obtain, location, difficulty, processing_type, processed_into, catagory):
+        sqliteConnection = sqlite3.connect('equipment.db')
+        cursor = sqliteConnection.cursor()
+        material_name_lower = material_name.lower()
+        material_description_lower = material_description.lower()
+        material_rarity_lower = material_rarity.lower()
+        how_to_obtain_lower = how_to_obtain.lower()
+        location_lower = location.lower()
+        processing_type_lower = processing_type.lower()
+        processed_into_lower = processed_into.lower()
+        catagory_lower = catagory.lower()
+        query = que.add_blacksmithing_material_to_server_equipment()
+        cursor.execute(query, (material_name_lower, material_description_lower,
+                               material_rarity_lower, how_to_obtain_lower, location_lower,
+                               difficulty, processing_type_lower, processed_into_lower,
+                               catagory_lower))   
+        sqliteConnection.commit()
+        cursor.close()
+        sqliteConnection.close()
+        return('``` material: ' + material_name_lower + ' has been added to the game.```')
+
+def remove_blacksmithing_material_from_server(material_name):
+        sqliteConnection = sqlite3.connect('equipment.db')
+        cursor = sqliteConnection.cursor()
+        material_name_lower = material_name.lower()
+        query = que.remove_blacksmithing_material_from_server_equipment()
+        cursor.execute(query, (material_name_lower))
+        sqliteConnection.commit()
+        cursor.close()
+        return('``` material: ' + material_name_lower + ' has been removed to the game.```')
+             
 def add_proficiency_skill_to_server(skill_name, skill_description, skill_effects, skill_type):
-        sqliteConnection = sqlite3.connect('characterSheet.db')
+        sqliteConnection = sqlite3.connect('equipment.db')
         cursor = sqliteConnection.cursor()
         skill_name_lower = skill_name.lower()
         skill_type_lower = skill_type.lower()
         character_information = cursor.execute("INSERT INTO proficiency_skills(skill_name, skill_description, skill_effects, skill_type) VALUES ('" + skill_name_lower + "','" + skill_description + "','" + skill_effects + "','" + skill_type_lower + "')")    
         sqliteConnection.commit()
         cursor.close()
-        return('``` Item:: ' + skill_name + ' has been added to the game.```')
+        return('``` Item:: ' + skill_name_lower + ' has been added to the game.```')
 
 def remove_proficiency_skill_from_server(skill_name):
-        sqliteConnection = sqlite3.connect('characterSheet.db')
+        sqliteConnection = sqlite3.connect('equipment.db')
         cursor = sqliteConnection.cursor()
         skill_name_lower = skill_name.lower()
         character_information = cursor.execute("DELETE FROM proficiency_skills WHERE skill_name = '" + skill_name_lower + "';")
@@ -127,20 +193,20 @@ def remove_proficiency_skill_from_server(skill_name):
         return('``` Proficiency skill: ' + skill_name_lower + ' has been removed to the game.```')
 
 def add_unique_skill_to_server(item_catagory, item_name, item_description, item_rarity, dropped_by):
-        sqliteConnection = sqlite3.connect('characterSheet.db')
+        sqliteConnection = sqlite3.connect('equipment.db')
         cursor = sqliteConnection.cursor()
         item_catagory_lower = item_catagory.lower()
         item_name_lower = item_name.lower()
         item_description_lower = item_description.lower()
         item_rarity_lower = item_rarity.lower()
         dropped_by_lower = dropped_by.lower()
-        character_information = cursor.execute("DELETE FROM items(catagory, item, item_description, rarity, droppedBy) VALUES ('" + item_catagory_lower + "','" + item_name_lower + "','" + item_description_lower + "','" + item_rarity_lower + "','" + dropped_by_lower + "'" + ")")    
+        character_information = cursor.execute("DELETE FROM unique_skills(catagory, item, item_description, rarity, droppedBy) VALUES ('" + item_catagory_lower + "','" + item_name_lower + "','" + item_description_lower + "','" + item_rarity_lower + "','" + dropped_by_lower + "'" + ")")    
         sqliteConnection.commit()
         cursor.close()
         return('``` Item:: ' + item_name + ' has been added to the game.```')
 
 def remove_unique_skill_from_server(item_catagory, item_name, item_description, item_rarity, dropped_by):
-        sqliteConnection = sqlite3.connect('characterSheet.db')
+        sqliteConnection = sqlite3.connect('equipment.db')
         cursor = sqliteConnection.cursor()
         item_catagory_lower = item_catagory.lower()
         item_name_lower = item_name.lower()
@@ -153,7 +219,7 @@ def remove_unique_skill_from_server(item_catagory, item_name, item_description, 
         return('``` Item:: ' + item_name + ' has been removed to the game.```')
 
 def add_mobs_to_server(item_catagory, item_name, item_description, item_rarity, dropped_by):
-        sqliteConnection = sqlite3.connect('characterSheet.db')
+        sqliteConnection = sqlite3.connect('mobspawn.db')
         cursor = sqliteConnection.cursor()
         item_catagory_lower = item_catagory.lower()
         item_name_lower = item_name.lower()
@@ -166,7 +232,7 @@ def add_mobs_to_server(item_catagory, item_name, item_description, item_rarity, 
         return('``` Item:: ' + item_name + ' has been added to the game.```')
 
 def remove_mobs_from_server(item_catagory, item_name, item_description, item_rarity, dropped_by):
-        sqliteConnection = sqlite3.connect('characterSheet.db')
+        sqliteConnection = sqlite3.connect('mobspawn.db')
         cursor = sqliteConnection.cursor()
         item_catagory_lower = item_catagory.lower()
         item_name_lower = item_name.lower()
@@ -179,7 +245,7 @@ def remove_mobs_from_server(item_catagory, item_name, item_description, item_rar
         return('``` Item:: ' + item_name + ' has been removed to the game.```')
 
 def add_locations_to_server(name, type, rarity, drops, mob_description, floor, area):
-        sqliteConnection = sqlite3.connect('characterSheet.db')
+        sqliteConnection = sqlite3.connect('mobspawn.db')
         cursor = sqliteConnection.cursor()
         name_lower = name.lower()
         type_lower = type.lower()
@@ -207,7 +273,7 @@ def add_locations_to_server(name, type, rarity, drops, mob_description, floor, a
         return('``` mob: ' + name + ' has been added to the game.```')
 
 def remove_locations_from_server(item_catagory, item_name, item_description, item_rarity, dropped_by):
-        sqliteConnection = sqlite3.connect('characterSheet.db')
+        sqliteConnection = sqlite3.connect('mobspawn.db')
         cursor = sqliteConnection.cursor()
         item_catagory_lower = item_catagory.lower()
         item_name_lower = item_name.lower()
@@ -236,7 +302,7 @@ def add_beasts_to_server(beasts_name, base_level, base_hp,
                         str_growth_rate, def_growth_rate, 
                         spd_growth_rate, dex_growth_rate, 
                         beasts_description):
-        sqliteConnection = sqlite3.connect('characterSheet.db')
+        sqliteConnection = sqlite3.connect('beasts.db')
         cursor = sqliteConnection.cursor()
         beasts_name_lower = beasts_name.lower()
         query = """INSERT INTO beastdb(beasts_name, base_level,
@@ -262,7 +328,7 @@ def add_beasts_to_server(beasts_name, base_level, base_hp,
 def remove_beasts_from_server(beasts_name):
     if(calc.validate_fields(beasts_name) == True):
         beasts_name_lower = beasts_name.lower()
-        sqliteConnection = sqlite3.connect('characterSheet.db')
+        sqliteConnection = sqlite3.connect('beasts.db')
         cursor = sqliteConnection.cursor()
         query = "DELETE FROM beastdb WHERE beasts_name = ?;"
         cursor.execute(query, beasts_name_lower)
@@ -275,7 +341,7 @@ def remove_beasts_from_server(beasts_name):
 def remove_beasts_from_player(beasts_nickname):
     if(calc.validate_fields(beasts_nickname) == True):
         beasts_nickname_lower = beasts_nickname.lower()
-        sqliteConnection = sqlite3.connect('characterSheet.db')
+        sqliteConnection = sqlite3.connect('beasts.db')
         cursor = sqliteConnection.cursor()
         query = "DELETE FROM characters_beast WHERE beasts_nickname = ? AND character_name;"
         cursor.execute(query, beasts_nickname_lower)
@@ -285,3 +351,21 @@ def remove_beasts_from_player(beasts_nickname):
 
         return('``` beast: ' + beasts_nickname_lower + ' was deleted from the server.```')
     
+def add_fish_to_server(name, description, location, rarity, how_to_obtain, difficulty):
+    if(calc.validate_fields(name) == True):
+        name_lower = name.lower()
+        description_lower = description.lower()
+        location_lower = location.lower()
+        rarity_lower = rarity.lower()
+        how_to_obtain_lower = how_to_obtain.lower()
+        sqliteConnection = sqlite3.connect('equipment.db')
+        cursor = sqliteConnection.cursor()
+        query = """INSERT INTO fishdb(name, description, rarity, how_to_obtain, location, difficulty)
+                   VALUES
+                        (?,?,?,?,?,?);"""
+        cursor.execute(query, (name_lower, description_lower, rarity_lower, how_to_obtain_lower, location_lower, difficulty))
+        sqliteConnection.commit()
+        cursor.close()
+        sqliteConnection.close()
+
+        return('``` fish: ' + name_lower + ' has been added to ' + location_lower + '.```')

@@ -3,19 +3,22 @@ import sqlite3
 import os
 import re
 import math
+import function_calls.query.query as que
 import function_calls.calc as calc
 from discord.ext import commands
 from discord import app_commands
 from discord.utils import get
 
-def combat(character_name_a, character_name_b, skill_use, weapon_name, skill_a, ailment, armor_value_b, skill_reduction_b, material_modifier_b):
+def combat(character_name_a, character_name_b, buffs_a, skill_use, weapon_name, skill_a, ailment, armor_value_b, buffs_b, skill_reduction_b, material_modifier_b):
     if(calc.validate_fields(skill_use) == True and calc.validate_fields(character_name_a) == True and calc.validate_fields(character_name_b) == True and calc.validate_fields(skill_a) == True and calc.validate_fields(ailment) == True and calc.validate_fields_commas(weapon_name) == True and  calc.validate_fields(armor_value_b) == True and calc.validate_fields(skill_reduction_b) == True and  calc.validate_fields_commas(material_modifier_b) == True):
         weapon_name_lower = weapon_name.lower()
         character_name_a_lower = character_name_a.lower()
         character_name_b_lower = character_name_b.lower()
         sqliteConnection = sqlite3.connect('characterSheet.db')
-        cursor = sqliteConnection.cursor()
-        weapon_stats = cursor.execute("SELECT base_power, crit_chance, weapon_material, weapon_attack_type FROM weapons WHERE weapon_name = '" + weapon_name_lower + "'").fetchall()       
+        sqliteConnection2 = sqlite3.connect('equipment.db')
+        cursor = sqliteConnection.cursor() 
+        cursor2 = sqliteConnection2.cursor()
+        weapon_stats = cursor2.execute("SELECT base_power, crit_chance, weapon_material, weapon_attack_type FROM weapons WHERE weapon_name = '" + weapon_name_lower + "'").fetchall()       
         character_a_stats = cursor.execute("SELECT str, dex FROM charactersheets WHERE nickname = '" + character_name_a_lower + "'").fetchall()               
         character_b_stats = cursor.execute("SELECT def, dex FROM charactersheets WHERE nickname = '" + character_name_b_lower + "'").fetchall()               
         if(weapon_stats[0][3].lower() == 'str'):
@@ -38,11 +41,13 @@ def combat(character_name_a, character_name_b, skill_use, weapon_name, skill_a, 
         check_crit = calc.check_for_bleed()
         results = ""
         if(ailment_lower == "poison"):
-            check_poison = calc.check_for_bleed()
-        elif(ailment_lower == "bleed"):
-            check_bleed = calc.check_for_bleed()
-       
-        print(str(check_crit) + " " + str(100 - int(crit_chance_a)))
+            check_status = calc.check_for_bleed()
+        if(ailment_lower == "paralysis"):
+            check_status = calc.check_for_bleed()
+        if(ailment_lower == "bleed"):
+            check_status = calc.check_for_bleed()
+        if check_status >= 90:     
+            results = results + "```You inflicted " + ailment_lower + " on " + character_name_b_lower + "!\n\n```"
         chance_for_crit = 100 - int(crit_chance_a)
         if check_crit >= chance_for_crit:
             results = results + "```You landed a critical hit!``` "
@@ -62,25 +67,25 @@ def combat(character_name_a, character_name_b, skill_use, weapon_name, skill_a, 
         else:
             total_graze_reduction = 1
         if skill_use_lower == 'yes':
-            damage_dealt = calc.skill_damage_calculation(offense_a, weapon_value_a, skill_a, total_graze_reduction, material_modifier_a, defense_b, armor_value_b, skill_reduction_b, material_modifier_b, crit_modifier)
+            damage_dealt = calc.skill_damage_calculation(offense_a, weapon_value_a, skill_a, total_graze_reduction, buffs_a, defense_b, armor_value_b, skill_reduction_b, buffs_b, crit_modifier)
             if check_graze >= graze_reduction:
-                results = results + '```You dealt: ' + str(damage_dealt) + ' skill damage.```'
+                results = results + '```You dealt: ' + str(damage_dealt) + ' damage.```'
             else:
-                results = results + '```You dealt: ' + str(damage_dealt) + ' skill damage.```'   
+                results = results + '```You dealt: ' + str(damage_dealt) + ' damage.```'   
             cursor.close()                
             return(results)
         else:
-            damage_dealt = calc.slash_damage_calculation(offense_a, weapon_value_a, total_graze_reduction, material_modifier_a, defense_b, armor_value_b, material_modifier_b, crit_modifier)
+            damage_dealt = calc.slash_damage_calculation(offense_a, weapon_value_a, total_graze_reduction, buffs_a, defense_b, armor_value_b, buffs_b, crit_modifier)
             if check_graze >= graze_reduction:
-                results = results + '```You dealt: ' + str(damage_dealt) + ' skill damage.```'
+                results = results + '```You dealt: ' + str(damage_dealt) + ' damage.```'
             else:
-                results = '```You dealt: ' + str(damage_dealt) + ' skill damage.```' 
+                results = results + '```You dealt: ' + str(damage_dealt) + ' damage.```' 
             cursor.close()                    
             return(results)
     else:
         return('```You input an invalid character. Please do not use special characters. ```')
 
-def mob_combat(character_name_a, mob_name, skill_use, weapon_name, skill_a, ailment):
+def mob_combat(character_name_a, mob_name, skill_use, buffs, weapon_name, skill_a, ailment):
     if(calc.validate_fields(skill_use) == True and calc.validate_fields(character_name_a) == True and calc.validate_fields(mob_name) == True and calc.validate_fields(skill_a) == True and calc.validate_fields(ailment) == True and calc.validate_fields_commas(weapon_name) == True):
         weapon_name_lower = weapon_name.lower()
         character_name_a_lower = character_name_a.lower()
@@ -89,10 +94,12 @@ def mob_combat(character_name_a, mob_name, skill_use, weapon_name, skill_a, ailm
         skill_reduction_b = '1'
         material_modifier_b = '1'
         sqliteConnection = sqlite3.connect('characterSheet.db')
+        sqliteConnection3 = sqlite3.connect('equipment.db')
         cursor = sqliteConnection.cursor()
+        cursor3 = sqliteConnection3.cursor()
         sqliteConnection2 = sqlite3.connect('mobspawn.db')
         cursor2 = sqliteConnection2.cursor()
-        weapon_stats = cursor.execute("SELECT base_power, crit_chance, weapon_material, weapon_attack_type FROM weapons WHERE weapon_name = '" + weapon_name_lower + "'").fetchall()       
+        weapon_stats = cursor3.execute("SELECT base_power, crit_chance, weapon_material, weapon_attack_type FROM weapons WHERE weapon_name = '" + weapon_name_lower + "'").fetchall()       
         character_a_stats = cursor.execute("SELECT str, dex FROM charactersheets WHERE nickname = '" + character_name_a_lower + "'").fetchall()               
         mob_b_stats = cursor2.execute("SELECT DEF, DEX FROM stats WHERE name = '" + mob_name_b_lower + "'").fetchall()               
         if(weapon_stats[0][3].lower() == 'str'):
@@ -109,6 +116,77 @@ def mob_combat(character_name_a, mob_name, skill_use, weapon_name, skill_a, ailm
             cursor2.close()
             cursor.close()   
             return('```Weapon does not exist. ```')
+        old_inventory = calc.remove_white_spaces_around_commas(weapon_stats[0][0]) 
+        skill_use_lower = skill_use.lower()
+        ailment_lower = ailment.lower()
+        check_graze = calc.check_for_bleed()
+        check_crit = calc.check_for_bleed()
+        results = ""
+        if(ailment_lower == "poison"):
+            check_status = calc.check_for_bleed()
+        if(ailment_lower == "paralysis"):
+            check_status = calc.check_for_bleed()
+        if(ailment_lower == "bleed"):
+            check_status = calc.check_for_bleed()
+        if check_status >= 90:
+            results = results + "```You inflicted " + ailment_lower + " on the " + mob_name_b_lower + "!\n\n```"
+        print(str(check_crit) + " " + str(100 - int(crit_chance_a)))
+        chance_for_crit = 100 - int(crit_chance_a)
+        if check_crit >= chance_for_crit:
+            results = results + "```You landed a critical hit! \n\n```"
+            crit_modifier = 1.5
+        else:
+            crit_modifier = 1 
+        
+        graze_dex = math.ceil((int(dex_b) / 10) * 5)
+        if graze_dex > 40 and skill_use_lower == 'yes':
+            graze_dex = 40
+        elif graze_dex > 15 and skill_use_lower == 'no':
+            graze_dex = 15
+        graze_reduction = 90 - graze_dex
+        if check_graze >= graze_reduction:
+            results = results + "```You grazed the " + mob_name_b_lower + "!\n\n```"
+            total_graze_reduction = 100 - check_graze
+        else:
+            total_graze_reduction = 1
+        if skill_use_lower == 'yes':
+            damage_dealt = calc.skill_damage_calculation(offense_a, weapon_value_a, skill_a, total_graze_reduction, buffs, defense_b, armor_value_b, skill_reduction_b, 0, crit_modifier)
+            if check_graze >= graze_reduction:
+                results = results + '```You dealt: ' + str(damage_dealt) + ' skill damage.```'
+            else:
+                results = results + '```You dealt: ' + str(damage_dealt) + ' skill damage.```' 
+            cursor2.close()
+            cursor.close()               
+            return(results)
+        else:
+            damage_dealt = calc.slash_damage_calculation(offense_a, weapon_value_a, total_graze_reduction, buffs, defense_b, armor_value_b, 0, crit_modifier)
+            if check_graze >= graze_reduction:
+                results = results + '```You dealt: ' + str(damage_dealt) + ' skill damage.```'
+            else:
+                results = results + '```You dealt: ' + str(damage_dealt) + ' skill damage.```' 
+            cursor2.close()
+            cursor.close()                    
+            return(results)
+    else:
+        return('```You input an invalid character. Please do not use special characters. ```')
+
+def beast_mob_combat(character_name_a, mob_name, skill_use, weapon_name, skill_a, ailment, discord_tag):
+    if(calc.validate_fields(skill_use) == True and calc.validate_fields(character_name_a) == True and calc.validate_fields(mob_name) == True and calc.validate_fields(skill_a) == True and calc.validate_fields(ailment) == True and calc.validate_fields_commas(weapon_name) == True):
+        weapon_name_lower = weapon_name.lower()
+        character_name_a_lower = character_name_a.lower()
+        mob_name_b_lower = mob_name.lower()
+        armor_value_b = '1'
+        skill_reduction_b = '1'
+        material_modifier_b = '1'
+        sqliteConnection = sqlite3.connect('beasts.db')
+        cursor = sqliteConnection.cursor()
+        sqliteConnection2 = sqlite3.connect('mobspawn.db')
+        cursor2 = sqliteConnection2.cursor()
+        query = que.check_beast_characters_beasts()
+        beasts_stats = cursor.execute(query, (character_name_a_lower, discord_tag)).fetchall()       
+        mob_b_stats = cursor2.execute("SELECT DEF, DEX FROM stats WHERE name = '" + mob_name_b_lower + "'").fetchall()               
+        defense_b = mob_b_stats[0][0]
+        dex_b = mob_b_stats[0][1]
         old_inventory = calc.remove_white_spaces_around_commas(weapon_stats[0][0]) 
         skill_use_lower = skill_use.lower()
         ailment_lower = ailment.lower()

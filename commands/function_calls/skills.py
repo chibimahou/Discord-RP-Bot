@@ -70,9 +70,12 @@ def check_skill(skill_name):
 def add_proficiency_skills(character_name, skill_name, discord_tag):
     if(calc.verify_account(character_name, discord_tag)):     
         if(calc.validate_fields(character_name) == True and  calc.validate_fields(skill_name) == True):
+            character_name_lower = character_name.lower()
             sqliteConnection = sqlite3.connect('characterSheet.db')
+            sqliteConnection2 = sqlite3.connect('equipment.db')
             cursor = sqliteConnection.cursor()
-            character_inventory = cursor.execute("SELECT proficiencySkills FROM charactersheets WHERE nickname = '" + character_name + "'").fetchall()       
+            cursor2 = sqliteConnection2.cursor()
+            character_inventory = cursor.execute("SELECT proficiencySkills FROM charactersheets WHERE nickname = '" + character_name_lower + "'").fetchall()       
             old_inventory = calc.remove_white_spaces_around_commas(character_inventory[0][0])
             old_inventory_length = len(old_inventory)
             skill_name_lower = skill_name.lower()
@@ -86,7 +89,7 @@ def add_proficiency_skills(character_name, skill_name, discord_tag):
 
             temp2 = 0
             try:
-                item_exists = cursor.execute("SELECT skill_name FROM proficiency_skills WHERE skill_name = '" + skill_name_lower + "'").fetchall()
+                item_exists = cursor2.execute("SELECT skill_name FROM proficiency_skills WHERE skill_name = '" + skill_name_lower + "'").fetchall()
                 item_exist_count = item_exists.__len__()
                 if item_exist_count != 0:     
                         for temp2 in range(old_inventory_length): 
@@ -96,9 +99,12 @@ def add_proficiency_skills(character_name, skill_name, discord_tag):
                                                 new_inventory = new_inventory + skill_name_lower + ":1"
                 else:
                         return ('``` Sorry, ' + skill_name + ' does not exist. ' + '```')
-                cursor.execute("UPDATE charactersheets SET proficiencySkills = '" + new_inventory + "' WHERE nickname = '" + character_name + "'").fetchall()
+                cursor.execute("UPDATE charactersheets SET proficiencySkills = '" + new_inventory + "' WHERE nickname = '" + character_name_lower + "'").fetchall()
                 sqliteConnection.commit()
                 cursor.close()
+                cursor2.close()
+                sqliteConnection.close()
+                sqliteConnection2.close()
 
                 return ('```' + skill_name + ' has been successfully added to your inventory. ' + '```')
             except:

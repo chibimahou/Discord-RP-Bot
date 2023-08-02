@@ -15,12 +15,30 @@ from discord.ext import commands
 from discord import app_commands
 from discord.utils import get
 
+def check_location(location):
+    location_lower = location.lower()
+    sqliteConnection = sqlite3.connect('mobspawn.db')
+    cursor = sqliteConnection.cursor()
+    query = """SELECT 
+            * 
+            FROM 
+                location
+                WHERE
+                    area = ?;"""
+    location_exists = cursor.execute(query, (location_lower,)).fetchall()
+    print(len(location_exists))
+    if(len(location_exists) == 0):
+        return False
+    else:
+        return True
 
 def spawn(floor, area):
     if(calc.validate_fields(floor) == True and  calc.validate_fields(area) == True):
         area_lower = area.lower()
         sqliteConnection = sqlite3.connect('mobspawn.db')
+        sqliteConnection2 = sqlite3.connect('sessions.db')
         cursor = sqliteConnection.cursor()
+        cursor2 = sqliteConnection2.cursor()
         monster_spawns = cursor.execute("SELECT spawns from Location WHERE floor = " + floor + " AND area = '" + area_lower + "'").fetchall()
         spawns= str(monster_spawns[0][0])
         monster_array = calc.remove_white_spaces_around_commas(spawns)
@@ -30,7 +48,26 @@ def spawn(floor, area):
         print(monster_array[1])
         random_monster = random.randint(0, monster_array_length)
         print(random_monster)
-        monster_information = cursor.execute("SELECT mobs.name, stats.hp, stats.str, stats.agi, stats.spe, mob_descriptions.mob_description, mobs.drops, stats.def FROM mobs INNER JOIN stats INNER JOIN mob_descriptions on mobs.name = stats.name AND mobs.name = mob_descriptions.name WHERE mobs.name = '" + monster_array[random_monster] + "'").fetchall()
+        monster_information = cursor.execute("""SELECT 
+                                                    mobs.name, stats.hp, stats.str, 
+                                                    stats.dex, stats.spe, 
+                                                    mob_descriptions.mob_description, 
+                                                    mobs.drops, stats.def, stats.max_hp, 
+                                                    stats.max_str, stats.max_def, stats.max_spe, 
+                                                    stats.max_dex, stats.col, stats.xp, 
+                                                    stats.max_xp, stats.beginner_level, 
+                                                    stats.max_level FROM mobs 
+                                                    INNER JOIN 
+                                                        stats 
+                                                        INNER JOIN 
+                                                            mob_descriptions 
+                                                            ON 
+                                                                mobs.name = stats.name 
+                                                                AND 
+                                                                    mobs.name = mob_descriptions.name 
+                                                                    WHERE 
+                                                                        mobs.name = '""" + monster_array[random_monster] + 
+                                                                        """'""").fetchall()
         cursor.close()
         return monster_information
 
