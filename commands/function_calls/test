@@ -1,1 +1,0 @@
-item_catagory: str item_name: str item_description: str item_rarity: str dropped_by: str
