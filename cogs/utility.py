@@ -5,7 +5,8 @@ from datetime import datetime
 import mysql.connector
 from mysql.connector import Error
 from cryptography.fernet import Fernet
-from config.config import (DB_NAME, DB_USERNAME, DB_PASSWORD, DB_HOST)
+from pymongo import MongoClient
+from config.config import (DB_NAME, DB_USERNAME, DB_PASSWORD, DB_HOST, URI)
 
 class utility(app_commands.Group):
     @app_commands.command()
@@ -46,22 +47,30 @@ def validate_level(input_str):
 #Open connection to database
 def get_db_connection():
     try:
-        connection = mysql.connector.connect(
-            host=DB_HOST,
-            user=DB_USERNAME,
-            password=DB_PASSWORD,
-            database=DB_NAME
-        )
-        if connection.is_connected():
-            return connection
-    except Error as e:
-        print(f"Error: {e}")
+        # For a local MongoDB database
+        client = MongoClient(URI)
+        print("Connected to client")
+        db = client[DB_NAME]  # Replace 'yourDatabaseName' with your actual database name
+        print("Connecting to db")
+        # Optionally, check if the connection was successful by listing the database names
+        # This is not a direct equivalent of the MySQL is_connected, but it can serve as a simple connection check
+        print(client.list_database_names())
+        print("test: " + DB_NAME)
+        if DB_NAME in client.list_database_names():
+            print("Connected to MongoDB")
+            return db
+        else:
+            print("Failed to connect to MongoDB")
+            return None
+    except Exception as e:  # It's generally a good idea to catch more specific exceptions, but for simplicity, we'll catch all here.
+        print(f"Error connecting to MongoDB: {e}")
         return None
 
-def close_db_connection(connection):
-    if connection.is_connected():
-        connection.close()
-
+def close_db_connection(client):
+    # MongoDB uses a different approach to close connections. However, MongoClient automatically handles connection pooling.
+    # It's generally safe to reuse MongoClient instances across your application.
+    # Explicitly closing connection is often not necessary, but if you need to, you can call client.close()
+    client.close()
 #_______________________________________________________________________________________________________________________
 # select active character name
 def active_character(discord_tag):

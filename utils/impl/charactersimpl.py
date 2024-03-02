@@ -7,95 +7,43 @@ from cogs.utility import (validate_alphanumeric, validate_height, validate_age,
                      close_db_connection, active_character)
 
 def create_character_logic(character_data, interaction):
-        validators = {
-            "first_name": validate_alphanumeric,
-            "last_name": validate_alphanumeric,
-            "characters_name": validate_alphanumeric,
-            "height": validate_height,
-            "physique": validate_alphanumeric,
-            "age": validate_age,
-            "birthday": validate_alphanumeric,
-            "bio": validate_text,
-            "level": validate_level
-        }
+    validators = {
+        "first_name": validate_alphanumeric,
+        "last_name": validate_alphanumeric,
+        "characters_name": validate_alphanumeric,
+        "height": validate_height,
+        "physique": validate_alphanumeric,
+        "age": validate_age,
+        "birthday": validate_alphanumeric,
+        "bio": validate_text,
+        "level": validate_level
+    }
 
-        # Validate each field
-        for field, validator in validators.items():
-            if not validator(character_data[field]):
-                print(f"Invalid value for {field}.")
-                return interaction.response.send_message(f"Invalid value for {field}.")
+    # Validate each field
+    for field, validator in validators.items():
+        if field not in character_data or not validator(character_data[field]):
+            print(f"Invalid value for {field}.")
+            return interaction.response.send_message(f"Invalid value for {field}.")
 
-        # Below logic needs to be executed in a synchronous environment 
-        # since mysql-connector-python is not async. Consider using aiomysql for async.
-
-        # Connect to MySQL
-        try:
-            connection = get_db_connection()
-            
-            if connection:
-                cursor = connection.cursor()
-
-                # Define the stored procedure name and parameters
-                stored_procedure_name = 'sp_create_character'
-                stored_procedure_parameters = (
-                        character_data["first_name"],
-                        character_data["last_name"],
-                        character_data["height"],
-                        character_data["physique"],
-                        character_data["age"],
-                        '',  # Keeping the old value for proficiency skills
-                        '',  # ... and so on for other parameters
-                        '',
-                        '',
-                        character_data["bio"],
-                        '',
-                        '',
-                        character_data["birthday"],
-                        character_data["characters_name"], 
-                        '',
-                        '', 
-                        '', 
-                        '', 
-                        '', 
-                        '', 
-                        '', 
-                        '', 
-                        '', 
-                        100, 
-                        0, 
-                        1, 
-                        5, 
-                        5, 
-                        5, 
-                        5, 
-                        5, 
-                        5, 
-                        5,
-                        5, 
-                        '', 
-                        '', 
-                        character_data["discord_tag"],
-                        ''
-                )
-
-                # Call the stored procedure
-                cursor.callproc(stored_procedure_name, stored_procedure_parameters)
-
-                # Commit the transaction
-                connection.commit()
-            else:
-                print("Connection failed.")
-                return None
-        except Error as e:
-            print(f"Error: {e}")
-            return None 
-        finally:
-            # Close the cursor and connection
-            if cursor:
-                cursor.close()
-            close_db_connection(connection) 
-            return interaction.response.send_message(f"Character successfully created!")
-        
+    # Connect to MongoDB
+    db = get_db_connection()
+    if db is None:
+        print("Connection to MongoDB failed.")
+        return interaction.response.send_message("Failed to connect to the database.")
+    
+    try:
+        # Insert the character data into the 'rp_bot' collection
+        rp_bot_collection = db['rp_bot']  # The collection name
+        result = rp_bot_collection.insert_one(character_data)
+        print(f"Character successfully created with ID: {result.inserted_id}")
+        return interaction.response.send_message(f"Character successfully created!")
+    except InvalidDocument as e:
+        print(f"Error inserting document into MongoDB: {e}")
+        return interaction.response.send_message("Failed to create character due to invalid document.")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        return interaction.response.send_message("An unexpected error occurred.")
+    
 def delete_character_logic(character_data, interaction):
         # Your logic to delete a character goes here
         # This might involve validation, database operations, etc.
