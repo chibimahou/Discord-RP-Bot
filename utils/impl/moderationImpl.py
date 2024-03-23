@@ -1,6 +1,5 @@
 import discord
 from discord import app_commands
-from mysql.connector import Error
 
 from cogs.utility import (validate_alphanumeric, validate_height, validate_age, 
                      validate_date, validate_text, validate_level, get_db_connection,
@@ -54,6 +53,28 @@ def add_item_logic(interaction, item_data):
     except Exception as e:
         print(f"Error: {e}")
         return interaction.response.send_message("Error adding item to the database.")
+    
+def add_mob_logic(interaction, mob_data):
+    db = get_db_connection()
+    if db is None:
+        return"Failed to connect to the database."
+
+    try:
+        # Assuming 'Mobs' is a collection within your MongoDB database
+        # Check if the mob already exists
+        existing_mob = db.Mobs.find_one({"mob_name": mob_data["mob_name"], "floor": mob_data["floor"]})
+
+        if existing_mob:
+            return "Mob already exists."
+
+        # Insert the new mob data into the database
+        db.Mobs.insert_one(mob_data)
+
+        return "Mob added successfully!"
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return "An error occurred while adding the mob."
+
 
             
 def active_character_logic(interaction, discord_tag):

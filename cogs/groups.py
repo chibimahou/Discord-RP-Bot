@@ -1,8 +1,6 @@
 import discord
 from discord import app_commands
 from datetime import datetime
-import mysql.connector
-from mysql.connector import Error
 from utils.impl.charactersimpl import create_character_logic, delete_character_logic, active_character_logic
 
 class characters(app_commands.Group):
