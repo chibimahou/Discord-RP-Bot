@@ -1,7 +1,6 @@
 import discord
 import logging
 from discord import app_commands
-from mysql.connector import Error
 
 from utils.functions.character_functions import (
                     active_character, available_characters, create_character_insert, create_character, 

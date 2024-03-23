@@ -1,6 +1,5 @@
 import discord
 from discord import app_commands
-from mysql.connector import Error
 
 from utils.functions.inventory_functions import (
                     add_item_to_inventory, remove_item_from_inventory, check_inventory)
