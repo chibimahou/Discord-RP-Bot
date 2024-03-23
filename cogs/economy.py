@@ -3,7 +3,7 @@ from discord import app_commands
 
 class economy(app_commands.Group):
     @app_commands.command()
-    async def create_character(self, interaction: discord.Interaction):
+    async def add_col(self, interaction: discord.Interaction):
         await interaction.response.send_message("test")
         
 async def setup(bot):
