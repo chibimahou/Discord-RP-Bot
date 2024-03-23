@@ -47,13 +47,16 @@ def add_item_logic(interaction, item_data):
     
 async def add_mob_logic(interaction, mob_data):
     client,db = await get_db_connection()
+    
+def add_mob_logic(interaction, mob_data):
+    db = get_db_connection()
     if db is None:
         return"Failed to connect to the database."
 
     try:
         # Assuming 'Mobs' is a collection within your MongoDB database
         # Check if the mob already exists
-        existing_mob = db["Mobs"].find_one({"mob_name": mob_data["mob_name"], "floor": mob_data["floor"]})
+        existing_mob = db.Mobs.find_one({"mob_name": mob_data["mob_name"], "floor": mob_data["floor"]})
 
         if existing_mob:
             return "Mob already exists."
@@ -87,8 +90,6 @@ async def delete_mob_logic(interaction, mob_name):
     except Exception as e:
         print(f"An error occurred: {e}")
         return "An error occurred while deleting the mob."
-
-
 
             
 def active_character_logic(interaction, discord_tag):
