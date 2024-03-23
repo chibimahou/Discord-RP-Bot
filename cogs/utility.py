@@ -44,71 +44,35 @@ def validate_level(input_str):
     """Validate string to be a valid level (integer) and non-negative."""
     return input_str.isdigit() and int(input_str) >= 0
 #_______________________________________________________________________________________________________________________
-#Open connection to database
-def get_db_connection():
-    try:
-        # For a local MongoDB database
-        client = MongoClient(URI)
-        print("Connected to client")
-        db = client[DB_NAME]  # Replace 'yourDatabaseName' with your actual database name
-        print("Connecting to db")
-        # Optionally, check if the connection was successful by listing the database names
-        # This is not a direct equivalent of the MySQL is_connected, but it can serve as a simple connection check
-        print(client.list_database_names())
-        print("test: " + DB_NAME)
-        if DB_NAME in client.list_database_names():
-            print("Connected to MongoDB")
-            return db
-        else:
-            print("Failed to connect to MongoDB")
-            return None
-    except Exception as e:  # It's generally a good idea to catch more specific exceptions, but for simplicity, we'll catch all here.
-        print(f"Error connecting to MongoDB: {e}")
-        return None
+from motor.motor_asyncio import AsyncIOMotorClient
 
-def close_db_connection(client):
+
+async def get_db_connection():
+    client = AsyncIOMotorClient(URI)
+    db = client[DB_NAME]
+    return client, db
+
+async def close_db_connection(db):
     # MongoDB uses a different approach to close connections. However, MongoClient automatically handles connection pooling.
     # It's generally safe to reuse MongoClient instances across your application.
     # Explicitly closing connection is often not necessary, but if you need to, you can call client.close()
-    client.close()
+    db.close()
 #_______________________________________________________________________________________________________________________
 # select active character name
-def active_character(discord_tag):
+async def active_character(discord_tag):
+    client, db = await get_db_connection()
     try:
-                connection = get_db_connection()
-                
-                if connection:
-                    cursor = connection.cursor()
-
-                    # Define the stored procedure name and parameters
-                    stored_procedure_name = 'sp_get_active_character'
-                    stored_procedure_parameters = (
-                        discord_tag,
-                    )
-
-                    # Call the stored procedure
-                    cursor.callproc(stored_procedure_name, stored_procedure_parameters)
-
-                    # Fetching the results
-                    for result in cursor.stored_results():
-                        data = result.fetchone()
-                    
-                    for row in data:
-                        character_name = row
-                    
-                    return data, "Data fetched successfully!"
-                else:
-                    print("Connection failed.")
-                    return None
-    except Error as e:
-        print(f"Error: {e}")
-        return None 
-    finally:   
-        # Close the cursor and connection
-        if cursor:
-            cursor.close()
-        close_db_connection(connection) 
-        return character_name, active_character
+        character_document = await db["characters"].find_one({"discord_tag": discord_tag, "active": True})
+        if character_document:
+            character_name = character_document.get("characters_name")
+            return character_name, "Data fetched successfully!"
+        else:
+            return None, "No active character found for this Discord tag."
+    except Exception as e:
+        print(f"Error fetching active character: {e}")
+        return None, f"Error fetching active character: {e}"
+    finally:
+        await close_db_connection(client)
 #_______________________________________________________________________________________________________________________
 # select party id
 def get_party_or_guild_id(invitors_name, invite_to):
@@ -122,33 +86,23 @@ def get_party_or_guild_id(invitors_name, invite_to):
     return party_id
     
 def is_user_in_a_party(user_id, guild_id):
-    # Connect to your database
-    connection = get_db_connection()
-    try:
-        cursor = connection.cursor(buffered=True)
-        
-        # Query to check if the user is in the party
-        stored_procedure_name = 'sp_check_for_user_in_party'
-        stored_procedure_parameters = (
-            user_id,
-            guild_id
-        )
-        
-        # Execute the query with the provided user_id and party_id
-        cursor.callproc(stored_procedure_name, stored_procedure_parameters)
-        connection.commit()
-                
-        # Check if a result is found
-        return cursor.fetchone() is not None
-        
-    except mysql.connector.Error as err:
-        print(f"Error: {err}")
+    db = get_db_connection()
+    if db is None:
+        print("Failed to connect to the database.")
         return False
-    finally:
-        # Close the cursor and connection
-        cursor.close()
-        connection.close()
     
+    try:
+        # Assuming 'PartyMemberships' is the collection where membership information is stored
+        # This query looks for a document where the user_id and guild_id fields match the provided arguments
+        membership = db.PartyMemberships.find_one({"user_id": user_id, "guild_id": guild_id})
+        
+        # If a document is found, it means the user is in a party within the specified guild
+        return membership is not None
+        
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
+  
 def is_user_invited(invitor, invitee, guild_id):
     # Connect to your database
     connection = get_db_connection()
@@ -232,79 +186,87 @@ def is_party_leader(character, guild_id):
         return True
     else:
         return False
-    
+
 def select_new_leader(party_id):
-    connection = get_db_connection()
-    cursor = None
+    db = get_db_connection()
+    if db is None:
+        print("Failed to connect to the database.")
+        return
     
     try:
-        cursor = connection.cursor()
-        
-        # Name of the stored procedure and parameters
-        stored_procedure_name = 'sp_update_party_leader'
-        stored_procedure_parameters = (party_id, )
-        
-        # Call the stored procedure
-        cursor.callproc(stored_procedure_name, stored_procedure_parameters)
-        
-        # Commit the transaction
-        connection.commit()
-        
-        # Optionally return some result if needed
-    except Error as e:
-        print(f"Error: {e}")
-        # Optionally return some result or re-raise the exception
-    finally:
-        if cursor is not None and connection.is_connected():
-            cursor.close()
-            connection.close()
+        # Assuming you have a 'parties' collection and each party document has a 'members' array
+        # First, find the party by its ID
+        party = db.parties.find_one({"_id": party_id})
+        if party:
+            # Assuming party['members'] is a list of member IDs and you choose a new leader somehow
+            # For example, let's randomly select a new leader from members
+            import random
+            new_leader_id = random.choice(party['members'])
             
+            # Now, update the party document with the new leader ID
+            # Assuming there's a 'leader_id' field in the party document
+            db.parties.update_one({"_id": party_id}, {"$set": {"leader_id": new_leader_id}})
+            print("New leader selected successfully.")
+        else:
+            print("Party not found.")
+        
+    except Exception as e:
+        print(f"Error selecting new leader: {e}")
+
 def remove_user_from_party(character_id, party_id):
-    connection = get_db_connection()    
+    db = get_db_connection()
+    if db is None:
+        print("Failed to connect to the database.")
+        return "Failed to connect to the database."
+    
     try:
-        cursor = connection.cursor()
+        # Convert string IDs to ObjectId if they're not already in that format
+        if isinstance(character_id, str):
+            character_id = bson.ObjectId(character_id)
+        if isinstance(party_id, str):
+            party_id = bson.ObjectId(party_id)
         
-        # Name of the stored procedure and parameters
-        stored_procedure_name = 'sp_remove_user_from_party'
-        stored_procedure_parameters = (character_id, party_id)
+        # Update the party document to remove the character from the members array
+        update_result = db.parties.update_one(
+            {"_id": party_id},
+            {"$pull": {"members": character_id}}
+        )
         
-        # Call the stored procedure
-        cursor.callproc(stored_procedure_name, stored_procedure_parameters)
-        
-        # Commit the transaction
-        connection.commit()
-        
-        # Optionally return some result if needed, e.g., a success message.
-    except Error as e:
+        # Check if the update operation was successful
+        if update_result.modified_count > 0:
+            print("User removed from party successfully.")
+            return "User removed from party successfully."
+        else:
+            print("Failed to remove user from party or user was not in party.")
+            return "Failed to remove user from party or user was not in party."
+    except Exception as e:
         print(f"Error: {e}")
-        # Optionally return some result or re-raise the exception
-    finally:
-        if cursor is not None and connection.is_connected():
-            cursor.close()
-            connection.close()
+        return "Error removing user from party."
 
 #_______________________________________________________________________________________________________________________
 def add_guild(guild_id, guild_name):
-    connection = get_db_connection()    
+    db = get_db_connection()
+    if db is None:
+        print("Failed to connect to the database.")
+        return
+    
     try:
-        cursor = connection.cursor()
+        # Assuming 'guilds' is the collection where guild information is stored
+        # Create a new guild document
+        guild_document = {
+            "_id": guild_id,
+            "name": guild_name
+        }
+        
+        # Insert the new guild document into the 'guilds' collection
+        insert_result = db.guilds.insert_one(guild_document)
+        
+        if insert_result.inserted_id:
+            print(f"Guild {guild_name} added successfully!")
+        else:
+            print("Failed to add the guild.")
+    except Exception as e:
+        print(f"Error adding guild: {e}")
 
-        # Define the stored procedure name and parameters
-        stored_procedure_name = 'sp_add_guild'
-        stored_procedure_parameters = (guild_id, guild_name)
-        # Call the stored procedure
-        cursor.callproc(stored_procedure_name, stored_procedure_parameters)
-        # Commit the transaction
-        connection.commit()
-        print(f"Guild {guild_name} added successfully!")
-
-    except Error as e:
-        print(f"Error: {e}")
-
-    finally:
-        if connection.is_connected():
-            cursor.close()
-            connection.close()
-            
 async def setup(bot):
     bot.tree.add_command(utility(name="utility", description="Common utility functions, helpers, or shared logic used across cogs."))

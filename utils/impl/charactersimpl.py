@@ -6,7 +6,7 @@ from cogs.utility import (validate_alphanumeric, validate_height, validate_age,
                      validate_date, validate_text, validate_level, get_db_connection,
                      close_db_connection, active_character)
 
-def create_character_logic(character_data, interaction):
+async def create_character_logic(character_data, interaction):
     validators = {
         "first_name": validate_alphanumeric,
         "last_name": validate_alphanumeric,
@@ -25,66 +25,70 @@ def create_character_logic(character_data, interaction):
             print(f"Invalid value for {field}.")
             return interaction.response.send_message(f"Invalid value for {field}.")
 
-    # Connect to MongoDB
-    db = get_db_connection()
+    # Now including the guild_id in character_data before insertion
+    character_data['guild_id'] = interaction.guild.id  # Add guild ID to character data
+    active_character_name, message = await active_character(character_data["discord_tag"])
+    # Validates if there is an active character, if not, sets the new character as active
+    if active_character_name is None:
+        print("Active: True")
+        character_data['active'] = True
+    else:
+        print("Active: False")
+        character_data['active'] = False
+    
+    client, db = await get_db_connection()  # Adjust this function as needed
     if db is None:
         print("Connection to MongoDB failed.")
-        return interaction.response.send_message("Failed to connect to the database.")
+        await interaction.response.send_message("Failed to connect to the database.")
+        return
     
     try:
-        # Insert the character data into the 'rp_bot' collection
-        rp_bot_collection = db['rp_bot']  # The collection name
-        result = rp_bot_collection.insert_one(character_data)
-        print(f"Character successfully created with ID: {result.inserted_id}")
-        return interaction.response.send_message(f"Character successfully created!")
-    except InvalidDocument as e:
-        print(f"Error inserting document into MongoDB: {e}")
-        return interaction.response.send_message("Failed to create character due to invalid document.")
+        # Insert the character data into the database
+        rp_bot_collection = db['characters']  # Assuming 'characters' is the correct collection name
+        rp_bot_collection.insert_one(character_data)
+        await interaction.response.send_message("Character successfully created!")
     except Exception as e:
         print(f"Unexpected error: {e}")
-        return interaction.response.send_message("An unexpected error occurred.")
-    
-def delete_character_logic(character_data, interaction):
-        # Your logic to delete a character goes here
-        # This might involve validation, database operations, etc.
-        valid_character_name = validate_alphanumeric("characters_name")
-        if not valid_character_name:
-            print(f"Invalid character_name.")
-            return False, f"Invalid value for character name."
+        await interaction.response.send_message("An unexpected error occurred.")
+    finally:
+        client.close()     
+                 
+async def delete_character_logic(character_data, interaction):
+    # Validate the character name
+    if not validate_alphanumeric(character_data.get("characters_name", "")):
+        print("Invalid character name.")
+        await interaction.response.send_message("Invalid value for character name.")
+        return
+
+    client, db = await get_db_connection()
+    if db is None:
+        print("Connection to MongoDB failed.")
+        await interaction.response.send_message("Failed to connect to the database.")
+        return
+
+    try:
+        print(f"Type of db: {type(db)}")  # This should not be a tuple
+        print(f"Type of character_data: {type(character_data)}")  # This should be dict
+        print(character_data["characters_name"])
+        delete_result = await db['characters'].delete_one({
+            "characters_name": character_data["characters_name"],
+            "discord_tag": character_data["discord_tag"]
+        })
+        print('1')
+        if delete_result.deleted_count > 0:
+            print("Character successfully deleted.")
+            await interaction.response.send_message("Character successfully deleted!")
         else:
-            try:
-                connection = get_db_connection()
-                
-                if connection:
-                    cursor = connection.cursor()
+            print("Character not found or already deleted.")
+            await interaction.response.send_message("Character not found or already deleted.")
+    except Exception as e:
+        print(f"Error: {e}")
+        await interaction.response.send_message("An error occurred while attempting to delete the character.")
 
-                    # Define the stored procedure name and parameters
-                    stored_procedure_name = 'sp_delete_character'
-                    stored_procedure_parameters = (             
-                        character_data["characters_name"], 
-                        character_data["discord_tag"], 
-                    )
-                    # Call the stored procedure
-                    cursor.callproc(stored_procedure_name, stored_procedure_parameters)
-
-                    # Commit the transaction
-                    connection.commit()
-                else:
-                    print("Connection failed.")
-                return None
-            except Error as e:
-                print(f"Error: {e}")
-                return None
-            finally:
-                # Close the cursor and connection
-                if cursor:
-                    cursor.close()
-                close_db_connection(connection) 
-                return interaction.response.send_message(f"Character successfully deleted!")
-            
-def active_character_logic(interaction, discord_tag):
-    username = active_character(discord_tag)
-    return interaction.response.send_message(f"Your active character is {username}!")
-    # Your logic to create a character goes here
-    # This might involve validation, database operations, etc.
-    
+async def active_character_logic(interaction, discord_tag):
+    username, message = await active_character(discord_tag)
+    print(username)
+    if username is not None:
+        await interaction.response.send_message(f"Your active character is {username}!")
+    else:
+        await interaction.response.send_message(message)

@@ -44,8 +44,7 @@ class characters(app_commands.Group):
     @app_commands.command()
     async def active_character(self, interaction: discord.Interaction):
         # Fetch user data from the database
-        results = active_character_logic(interaction, interaction.user.id)
-        await results
+        await active_character_logic(interaction, interaction.user.id)
     
     
     #_______________________________________________________

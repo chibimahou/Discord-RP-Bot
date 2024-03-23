@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from config.config import DISCORD_TOKEN
 
 bot = commands.Bot(command_prefix="!", intents = discord.Intents.all())
 
@@ -34,4 +35,4 @@ async def add_command(self, interaction: discord.Interaction, command_name, *, r
         await ctx.send(f"Command `{command_name}` added with response `{response}`.")
 
 bot.add_cog(DynamicCommands(bot))
-bot.run("MTAwNjM4NTMzNDEwOTYyMjMzNA.GPSUfe.jLjJd71L07Di1-W74hwM0VXQcCO-u2qJil6-oI")
+bot.run(DISCORD_TOKEN)

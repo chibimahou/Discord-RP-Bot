@@ -3,7 +3,7 @@ from cogs.utility import add_guild
 from discord.ext import commands
 from utils.connect import get_database
 from config.config import DISCORD_TOKEN
-
+import os
 
 def run():
     intents = discord.Intents.default()
@@ -44,5 +44,4 @@ def run():
         else:
             await ctx.send("An error occurred.")
             raise error
-
     bot.run(DISCORD_TOKEN)
