@@ -1,6 +1,7 @@
 import discord
 import logging
 import re
+from motor.motor_asyncio import AsyncIOMotorClient
 from discord import app_commands
 from datetime import datetime
 from cryptography.fernet import Fernet
@@ -42,21 +43,26 @@ def validate_text(input_str):
 def validate_level(input_str):
     """Validate string to be a valid level (integer) and non-negative."""
     return input_str.isdigit() and int(input_str) >= 0
+
+# Database
 #_______________________________________________________________________________________________________________________
-from motor.motor_asyncio import AsyncIOMotorClient
 
-
+# Connect to the database
 async def get_db_connection():
     client = AsyncIOMotorClient(URI)
     db = client[DB_NAME]
     return client, db
 
+# Close the database connection
 async def close_db_connection(db):
     # MongoDB uses a different approach to close connections. However, MongoClient automatically handles connection pooling.
     # It's generally safe to reuse MongoClient instances across your application.
     # Explicitly closing connection is often not necessary, but if you need to, you can call client.close()
     db.close()
+    
+# Characters
 #_______________________________________________________________________________________________________________________
+
 # select active character name
 async def active_character(discord_tag):
     client, db = await get_db_connection()
@@ -102,6 +108,33 @@ async def available_characters(discord_tag):
         await close_db_connection(client)
 
 
+#_______________________________________________________________________________________________________________________
+
+async def add_points_to_stat(discord_tag, guild_id, character_name, stat_updates):
+    client, db = await get_db_connection()
+    try:
+        # Ensure 'stat_updates' is a dictionary with stats as keys and points as values
+        if not isinstance(stat_updates, dict):
+            return "Invalid stat updates format. Expected a dictionary."
+
+        # Prepare the update document using the stat updates
+        update_doc = {"$inc": {f"stats.{stat}": points for stat, points in stat_updates.items()}}
+
+        # Update the character's stats
+        result = await db["characters"].update_one(
+            {"discord_tag": discord_tag, "characters_name": character_name, "guild_id": guild_id},
+            update_doc
+        )
+
+        if result.modified_count > 0:
+            return "Stats updated successfully!"
+        else:
+            return "Character not found or no update needed."
+    except Exception as e:
+        logging.exception("Error adding points to stats")
+        return "An error occurred while adding points to stats."
+    finally:
+        await close_db_connection(client)
 #_______________________________________________________________________________________________________________________
 # select party id
 def get_party_or_guild_id(invitors_name, invite_to):
