@@ -46,17 +46,21 @@ def add_item_logic(interaction, item_data):
         return interaction.response.send_message("Error adding item to the database.")
     
 async def add_mob_logic(interaction, mob_data):
+<<<<<<< HEAD
     client,db = await get_db_connection()
     
 def add_mob_logic(interaction, mob_data):
     db = get_db_connection()
+=======
+    db = await get_db_connection()
+>>>>>>> 71a5f20 (:()
     if db is None:
         return"Failed to connect to the database."
 
     try:
         # Assuming 'Mobs' is a collection within your MongoDB database
         # Check if the mob already exists
-        existing_mob = db.Mobs.find_one({"mob_name": mob_data["mob_name"], "floor": mob_data["floor"]})
+        existing_mob = db["Mobs"].find_one({"mob_name": mob_data["mob_name"], "floor": mob_data["floor"]})
 
         if existing_mob:
             return "Mob already exists."
