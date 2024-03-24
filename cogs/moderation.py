@@ -23,7 +23,7 @@ class moderation(app_commands.Group):
         await interaction.response.send_message(results)
         
     @app_commands.command()    
-    async def add_mobs(self, interaction: discord.Interaction, mob_name:str, mob_description:str, mob_type:str, floor:str, spawn_channel:str, level:str, hp:str, str:str, defense:str, spd:str, dex:str, cha:str ):
+    async def add_mobs(self, interaction: discord.Interaction, mob_name:str, mob_description:str, mob_type:str, floor:str, spawn_channel:str, level:str, hp:str, str:str, defense:str, spd:str, dex:str, cha:str, xp:str, spawn_message:str, ):
      # Fetch user data from the database
         mob_data = {
             "mob_name": mob_name,
@@ -37,7 +37,9 @@ class moderation(app_commands.Group):
             "defense": defense,
             "spd": spd, 
             "dex": dex,
-            "cha": cha,      
+            "cha": cha, 
+            "xp": xp,  
+            "spawn_message": spawn_message,
         }
         results = add_mob_logic(interaction, mob_data)
         await interaction.response.send_message(results) 
