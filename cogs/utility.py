@@ -1,9 +1,8 @@
 import discord
-from discord import app_commands
+import logging
 import re
+from discord import app_commands
 from datetime import datetime
-import mysql.connector
-from mysql.connector import Error
 from cryptography.fernet import Fernet
 from pymongo import MongoClient
 from config.config import (DB_NAME, DB_USERNAME, DB_PASSWORD, DB_HOST, URI)
@@ -69,10 +68,40 @@ async def active_character(discord_tag):
         else:
             return None, "No active character found for this Discord tag."
     except Exception as e:
-        print(f"Error fetching active character: {e}")
+        logging.exception(f"Error fetching active character: {e}")
         return None, f"Error fetching active character: {e}"
     finally:
         await close_db_connection(client)
+        
+# validate character exists in the database
+async def validate_character_exists(character_name, discord_tag):
+    client, db = await get_db_connection()
+    try:
+        character_document = await db["characters"].find_one({"discord_tag": discord_tag, "characters_name": character_name})
+        if character_document:
+            return True
+        else:
+            return False
+    except Exception as e:
+        logging.exception(f"Error validating character: {e}")
+        return False
+    finally:
+        await close_db_connection(client)
+        
+# return all characters for a user
+async def available_characters(discord_tag):
+    client, db = await get_db_connection()
+    try:
+        # Await the to_list coroutine to get the actual list of characters
+        characters = await db["characters"].find({"discord_tag": discord_tag}).to_list(length=None)
+        return characters
+    except Exception as e:
+        logging.exception(f"Error fetching characters: {e}")
+        return []
+    finally:
+        await close_db_connection(client)
+
+
 #_______________________________________________________________________________________________________________________
 # select party id
 def get_party_or_guild_id(invitors_name, invite_to):
@@ -88,7 +117,7 @@ def get_party_or_guild_id(invitors_name, invite_to):
 def is_user_in_a_party(user_id, guild_id):
     db = get_db_connection()
     if db is None:
-        print("Failed to connect to the database.")
+        logging.err("Failed to connect to the database.")
         return False
     
     try:

@@ -21,18 +21,5 @@ async def sync(self, ctx) -> None:
    )
    return
 
-@bot.tree.command(name="addcommand")
-@commands.has_permissions(administrator=True)  # Ensure only admins can add commands
-async def add_command(self, interaction: discord.Interaction, command_name, *, response):
-        if command_name in self.bot.all_commands:
-            await ctx.send(f"A command with the name `{command_name}` already exists.")
-            return
-
-        @self.bot.command(name=command_name)
-        async def dynamic_command(ctx):
-            await ctx.send(response)
-
-        await ctx.send(f"Command `{command_name}` added with response `{response}`.")
-
 bot.add_cog(DynamicCommands(bot))
 bot.run(DISCORD_TOKEN)
