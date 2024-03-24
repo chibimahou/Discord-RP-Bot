@@ -4,6 +4,7 @@ from discord.ext import commands
 from utils.connect import get_database
 from config.config import DISCORD_TOKEN
 import os
+import logging
 
 def run():
     intents = discord.Intents.default()
@@ -14,21 +15,21 @@ def run():
     @bot.event 
     async def on_ready():
         bot.db = get_database()  # Assign database to bot instance
-        print(f'Logged in as {bot.user.name}')
+        logging.debug(f'Logged in as {bot.user.name}')
 
         #Get external commands   
         for cog in cogs:
             try:
                 await bot.load_extension(cog)
-                print(f"Loaded {cog}")
+                logging.debug(f"Loaded {cog}")
             except Exception as e:
-                print(f"Failed to load {cog}: {e}")
+                logging.exception(f"Failed to load {cog}: {e}")
         #sync with discord
         await bot.tree.sync()
 
     @bot.event
     async def on_guild_join(guild):
-        print(f"Joined a new guild: {guild.name}")
+        logging.info(f"Joined a new guild: {guild.name}")
         add_guild(guild.id, guild.name)
             
     @bot.event
@@ -44,4 +45,5 @@ def run():
         else:
             await ctx.send("An error occurred.")
             raise error
+        
     bot.run(DISCORD_TOKEN)
