@@ -5,16 +5,6 @@ from cogs.utility import (validate_alphanumeric, validate_height, validate_age,
                      validate_date, validate_text, validate_level, get_db_connection,
                      close_db_connection, active_character)
 
-def get_db_connection():
-    try:
-        # Assuming MongoDB is running on the default host and port
-        client = MongoClient('mongodb://localhost:27017/')
-        # Assuming the database is named 'game'
-        return client['game']
-    except Exception as e:
-        print(f"Failed to connect to the database: {e}")
-        return None
-
 def add_item_logic(interaction, item_data):
     validators = {
         "item_name": validate_text,
@@ -55,7 +45,7 @@ def add_item_logic(interaction, item_data):
         return interaction.response.send_message("Error adding item to the database.")
     
 async def add_mob_logic(interaction, mob_data):
-    db = await get_db_connection()
+    client,db = await get_db_connection()
     if db is None:
         return"Failed to connect to the database."
 
@@ -74,6 +64,29 @@ async def add_mob_logic(interaction, mob_data):
     except Exception as e:
         print(f"An error occurred: {e}")
         return "An error occurred while adding the mob."
+    
+    
+async def delete_mob_logic(interaction, mob_name):
+    client, db = await get_db_connection()
+    if db is None:
+        return "Failed to connect to the database."
+
+    try:
+        # Assuming 'Mobs' is a collection within your MongoDB database
+        # Check if the mob exists
+        existing_mob = db["Mobs"].find_one({"mob_name": mob_name})
+
+        if not existing_mob:
+            return "Mob not found."
+
+        # Delete the mob from the database
+        db["Mobs"].delete_one({"mob_name": mob_name})
+
+        return f"Mob '{mob_name}' deleted successfully!"
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return "An error occurred while deleting the mob."
+
 
 
             
