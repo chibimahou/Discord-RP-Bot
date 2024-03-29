@@ -4,8 +4,8 @@ from discord import app_commands
 from mysql.connector import Error
 
 from utils.functions.character_functions import (
-                    active_character, validate_character_exists,
-                    available_characters)
+                    active_character, available_characters, create_character_insert, create_character, 
+                    delete_character, switch_active_character)
 from utils.functions.database_functions import (
                     get_db_connection)
 from utils.functions.validation_functions import (validate_alphanumeric, validate_height, validate_age, 
@@ -31,86 +31,39 @@ async def create_logic(character_data, interaction):
             return f"Invalid value for {field}."
 
     # Now including the guild_id in character_data before insertion
-    character_data['guild_id'] = interaction.guild.id  # Add guild ID to character data
-    active_character_name, message = await active_character(character_data["discord_tag"])
+    character_insert = await create_character_insert(character_data, interaction.guild.id)
+    active_character_name, message = await active_character(character_insert["player"]["discord_tag"], character_insert["player"]["guild_id"])
     # Validates if there is an active character, if not, sets the new character as active
     if active_character_name is None:
         print("Active: True")
-        character_data['active'] = True
+        character_insert["player"]['active'] = True
     else:
         print("Active: False")
-        character_data['active'] = False
-    
-    client, db = await get_db_connection()  # Adjust this function as needed
-    if db is None:
-        logging.error("Connection to MongoDB failed.")
-        return "Failed to connect to the database."
-        return
-    
+        character_insert["player"]['active'] = False
     try:
         # Insert the character data into the database
-        rp_bot_collection = db['characters']  # Assuming 'characters' is the correct collection name
-        rp_bot_collection.insert_one(character_data)
-        return "Character successfully created!"
+        await create_character(character_insert)
     except Exception as e:
         logging.exception(f"Unexpected error: {e}")
         return "An unexpected error occurred."
     finally:
-        client.close()     
-                 
+        return "Character successfully created!"
+                     
 async def delete_logic(character_data, interaction):
     # Validate the character name
     if not validate_alphanumeric(character_data.get("characters_name", "")):
         logging.info("Invalid character name.")
         return "Invalid value for character name."
-
-    client, db = await get_db_connection()
-    if db is None:
-        logging.error("Connection to MongoDB failed.")
-        return "Failed to connect to the database."
-
-    try:
-        delete_result = await db['characters'].delete_one({
-            "characters_name": character_data["characters_name"],
-            "discord_tag": character_data["discord_tag"]
-        })
-        if delete_result.deleted_count > 0:
-            logging.info("Character successfully deleted.")
-            return "Character successfully deleted!"
-        else:
-            logging.info("Character not found or already deleted.")
-            return "Character not found or already deleted."
-    except Exception as e:
-        logging.exception(f"Error: {e}")
-        return "An error occurred while attempting to delete the character."
+    message = await delete_character(character_data)
+    return message
 
 async def switch_active_logic(character_data, interaction):
     # Validate the character name
     if not validate_alphanumeric(character_data.get("characters_name", "")):
         logging.info("Invalid character name.")
         return "Invalid value for character name."
-    #Validate character exists
-    character_exists = await validate_character_exists(character_data["characters_name"], character_data["discord_tag"])
-    if(character_exists == False):
-        return "Character does not exist."
-    client, db = await get_db_connection()
-    if db is None:
-        logging.error("Connection to MongoDB failed.")
-        return "Failed to connect to the database."
-    try:
-        #Validate that a character is active
-        active_character_name, message = await active_character(character_data["discord_tag"])
-        # If there is an active character, set it to inactive
-        if active_character_name is not None:
-            await db['characters'].update_one({"characters_name": active_character_name, "discord_tag": character_data["discord_tag"]},{"$set": {"active": False}})
-        # Set the new character as active
-        await db['characters'].update_one({"characters_name": character_data["characters_name"], "discord_tag": character_data["discord_tag"]},{"$set": {"active": True}})
-        return f"You are now using the character {character_data['characters_name']}!"
-    except Exception as e:
-        logging.exception(f"Error: {e}")
-        return f"An error occurred while attempting to switch the active character to {character_data['characters_name']}."
-    finally:
-        client.close()
+    message = await switch_active_character(character_data)
+    return message
         
 # Display all available characters for a user
 async def all_available_logic(interaction, discord_tag):
@@ -130,8 +83,4 @@ async def all_available_logic(interaction, discord_tag):
 
 async def active_logic(interaction, discord_tag):
     username, message = await active_character(discord_tag)
-    logging.debug(username)
-    if username is not None:
-        return f"Your active character is {username}!"
-    else:
-        return message
+    return message

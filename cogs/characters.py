@@ -32,7 +32,8 @@ class characters(app_commands.Group):
     async def delete_character(self, interaction: discord.Interaction, characters_name:str):
         character_data = {
             "characters_name": characters_name,
-            "discord_tag": interaction.user.id          
+            "discord_tag": interaction.user.id,
+            "guild_id": interaction.guild.id       
         }
         results = await delete_logic(character_data, interaction)
         await interaction.response.send_message(results)
@@ -42,7 +43,8 @@ class characters(app_commands.Group):
     async def switch_active(self, interaction: discord.Interaction, characters_name:str):
         character_data = {
             "characters_name": characters_name,
-            "discord_tag": interaction.user.id          
+            "discord_tag": interaction.user.id,
+            "guild_id": interaction.guild.id       
         }
         results =await switch_active_logic(character_data, interaction)
         await interaction.response.send_message(results)

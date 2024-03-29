@@ -31,10 +31,13 @@ def configure_logging():
     log_filename = f'cardinal_logs_{current_date}.log'
     
     file_handler = TimedRotatingFileHandler(log_filename, when="midnight", interval=1, backupCount=7)
+    console_handler = logging.StreamHandler()
     file_handler.setLevel(level)
     file_handler.setFormatter(formatter)
 
     # Add both handlers to the logger
+    logger.addHandler(console_handler)
     logger.addHandler(file_handler)
+    
 
 configure_logging()
