@@ -18,7 +18,7 @@ def get_db_connection():
         print(f"Failed to connect to the database: {e}")
         return None
 
-def add_inventory_logic(interaction, characters_name, discord_tag, item_name, quantity):
+def add_logic(interaction, characters_name, discord_tag, item_name, quantity):
     db = get_db_connection()
     if db is None:
         return "Failed to connect to the database."
