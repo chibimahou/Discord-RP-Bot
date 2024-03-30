@@ -5,7 +5,7 @@ from mysql.connector import Error
 
 from utils.functions.character_functions import (
                     active_character, available_characters, create_character_insert, create_character, 
-                    delete_character, switch_active_character)
+                    delete_character, switch_active_character, add_points_to_stat, level_up)
 from utils.functions.database_functions import (
                     get_db_connection)
 from utils.functions.validation_functions import (validate_alphanumeric, validate_height, validate_age, 
@@ -83,4 +83,17 @@ async def all_available_logic(interaction, discord_tag):
 
 async def active_logic(interaction, discord_tag):
     username, message = await active_character(discord_tag)
+    return message
+
+# Function to add stat points to a character
+async def add_stat_logic(discord_tag, guild_id, stat_name, stat_value):
+    message = await add_points_to_stat(discord_tag, guild_id, stat_name, stat_value)
+
+    return message
+
+# Function to level up a character
+async def level_up_logic(discord_tag, guild_id):
+    logging.info(f"Leveling up {discord_tag} in guild {guild_id}")
+    message = await level_up(discord_tag, guild_id)
+
     return message
