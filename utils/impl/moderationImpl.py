@@ -45,7 +45,11 @@ def add_item_logic(interaction, item_data):
         return interaction.response.send_message("Error adding item to the database.")
     
 async def add_mob_logic(interaction, mob_data):
+<<<<<<< HEAD
     client,db = await get_db_connection()
+=======
+    db = await get_db_connection()
+>>>>>>> 71a5f2039cd205af2fd3c1f79f79979b144b4c69
     if db is None:
         return"Failed to connect to the database."
 
@@ -64,6 +68,7 @@ async def add_mob_logic(interaction, mob_data):
     except Exception as e:
         print(f"An error occurred: {e}")
         return "An error occurred while adding the mob."
+<<<<<<< HEAD
     
     
 async def delete_mob_logic(interaction, mob_name):
@@ -87,6 +92,8 @@ async def delete_mob_logic(interaction, mob_name):
         print(f"An error occurred: {e}")
         return "An error occurred while deleting the mob."
 
+=======
+>>>>>>> 71a5f2039cd205af2fd3c1f79f79979b144b4c69
 
 
             

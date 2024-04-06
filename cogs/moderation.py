@@ -4,7 +4,11 @@ from discord import app_commands
 from cogs.utility import (validate_alphanumeric, validate_height, validate_age, 
                      validate_date, validate_text, validate_level, get_db_connection,
                      close_db_connection, active_character)
+<<<<<<< HEAD
 from utils.impl.moderationImpl import (add_item_logic, add_mob_logic, delete_mob_logic, view_mob_logic)
+=======
+from utils.impl.moderationImpl import (add_item_logic, add_mob_logic)
+>>>>>>> 71a5f2039cd205af2fd3c1f79f79979b144b4c69
 
 class moderation(app_commands.Group):
     # Select a character from multiple characters listed under a user    
@@ -41,8 +45,12 @@ class moderation(app_commands.Group):
             "xp": xp,  
             "spawn_message": spawn_message,
         }
-        results = await add_mob_logic(interaction, mob_data)
-        await interaction.response.send_message(results) 
+<<<<<<< HEAD
+    results = await add_mob_logic(interaction, mob_data)
+=======
+    results = add_mob_logic(interaction, mob_data)
+>>>>>>> 71a5f2039cd205af2fd3c1f79f79979b144b4c69
+    await interaction.response.send_message(results) 
     
     @app_commands.command()
     async def delete_mob(self, interaction: discord.interaction, mob_name: str): 
