@@ -13,14 +13,14 @@ class characters(app_commands.Group):
     @app_commands.describe(first_name="kirigaya", last_name="kazuto", characters_name="Kirito", height="5'2\"", physique="muscular",  age="12", birthday="1/2/22", bio="A young boy who loves vrmmos.", level="1")
     async def create(self, interaction: discord.Interaction, first_name:str, last_name:str, characters_name:str, height:str, physique:str,  age:str, birthday:str, bio:str, level: str):          
         character_data = {
-            "first_name": first_name,
-            "last_name": last_name,
-            "characters_name": characters_name,
+            "first_name": first_name.lower(),
+            "last_name": last_name.lower(),
+            "characters_name": characters_name.lower(),
             "height": height,
-            "physique": physique,
+            "physique": physique.lower(),
             "age": age,
             "birthday": birthday,
-            "bio": bio,
+            "bio": bio.lower(),
             "level": level,
             "discord_tag": interaction.user.id          
         }

@@ -388,3 +388,12 @@ async def updated_taming_value(character_document, updated_stat_value, points_to
         update_field = character_document["combat"]["taming"] - updated_stat_value
         
     return update_field
+
+def get_active_character(db, character_data):
+    logging.info(f"Character data: {character_data}")
+    return db["characters"].find_one(
+        {
+            "player.discord_tag": character_data["discord_tag"], 
+            "player.guild_id": character_data["guild_id"],
+            "player.active": True
+        })
