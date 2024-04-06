@@ -3,23 +3,35 @@ from discord import app_commands
 from datetime import datetime
 import mysql.connector
 from mysql.connector import Error
-from utils.impl.charactersimpl import create_character_logic, delete_character_logic, active_character_logic
+from utils.impl.groupsImpl import create_party_logic, party_invite_logic
 
 class characters(app_commands.Group):
-    # To be implemented
-    # _______________________________________________________
-    # Create a character
+
+    # send party invite
     @app_commands.command()
     @app_commands.describe(invitee="joe")
-    async def invite(self, interaction: discord.Interaction, invitee: str):          
+    async def party_invite(self, interaction: discord.Interaction, invitee: str):          
         invite_data = {
             "invitee": invitee,
-            "discord_tag": interaction.user.id          
+            "discord_tag": interaction.user.id,
+            "guild_id": interaction.guild.id         
         }
 
-        results = create_character_logic(invite_data, interaction)
+        results = party_invite_logic(invite_data, interaction)
         await results
     
+    # Create a party
+    @app_commands.command()
+    @app_commands.describe(party_name = "The Avengers")
+    async def create_party(self, interaction: discord.Interaction, party_name: str):          
+        party_data = {
+            "party_name": party_name,
+            "discord_tag": interaction.user.id,
+            "guild_id": interaction.guild.id         
+        }
+
+        results = create_party_logic(party_data, interaction)
+        await results
     #_______________________________________________________
 
 async def setup(bot):

@@ -81,8 +81,8 @@ async def all_available_logic(interaction, discord_tag):
         logging.exception(f"Error: {e}")
         return "An error occurred while attempting to display the characters."
 
-async def active_logic(interaction, discord_tag):
-    username, message = await active_character(discord_tag)
+async def active_logic(interaction, discord_tag, guild_id):
+    character_data, message = await active_character(discord_tag, guild_id)
     return message
 
 # Function to add stat points to a character

@@ -84,9 +84,8 @@ async def active_character(discord_tag, guild_id):
             }
         )
         if character_document:
-            character_name = character_document["character"]["characters_name"]  # Accessing nested field
-            logging.debug(f"Active character found: {character_name}")
-            return character_name, f"Your active character is: " + character_name + "."
+            logging.debug(f"Active character found: {character_document['character']['characters_name']}")
+            return character_document, f"Your active character is: " +  character_document['character']['characters_name'] + "."
         else:
             logging.debug("No active character found.")
             return None, f"No active character found for your profile"
