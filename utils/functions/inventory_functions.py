@@ -3,7 +3,7 @@ import math
 from utils.functions.character_functions import get_active_character
 from utils.functions.item_functions import get_item
 from utils.functions.database_functions import get_db_connection, close_db_connection
-
+from utils.functions.utility_functions import comment_wrap
 # Characters
 #_______________________________________________________________________________________________________________________
 
@@ -89,6 +89,42 @@ async def remove_item_from_inventory(character_data, item_data):
     finally:
         await close_db_connection(client)
 
+async def check_inventory(character_data):
+    client, db = await get_db_connection()
+    if db is None:
+        return "Failed to connect to the database."
+
+    try:
+        character_document = await get_active_character(db, character_data)
+        if not character_document:
+            return "Character not found."
+        logging.info(f"Character found: {character_document['character']['characters_name']}")
+        # Assuming the inventory structure is known and consistent
+        inventory = character_document["inventory"]
+        inventory_str_list = []  # List to hold inventory string descriptions
+        logging.info(f"Inventory: {inventory}")
+        # Iterate over each category in the inventory (e.g., 'equipment', 'consumables')
+        for category, items in inventory.items():
+            logging.info(f"Category: {category}")
+            # Add the category name to the string list
+            inventory_str_list.append(f"{category.capitalize()}:")
+            logging.info(f"Items1: {items}")
+            # Iterate over each item in the category
+            for item in items:
+                logging.info(f"Item2: {item}")
+                # Assuming each item is a dictionary with 'name' and 'quantity'
+                item_str = f" - {item['name'].capitalize()}: {item['quantity']}"
+                inventory_str_list.append(item_str)
+
+        # Join all the strings in the list into a single string to return
+        inventory_str = "\n".join(inventory_str_list)
+        return await comment_wrap(inventory_str)
+    except Exception as e:
+        logging.error(f"Failed to check inventory: {str(e)}")
+        return f"Failed to check inventory: {str(e)}"
+    finally:
+        await close_db_connection(client)
+        
 async def update_quantity_or_check_item_exists(character_document, inventory_field, item_data, add_or_remove):
     # Iterate over each equipment_item in the character's equipment array
     for equipment_item in character_document["inventory"][inventory_field]:
