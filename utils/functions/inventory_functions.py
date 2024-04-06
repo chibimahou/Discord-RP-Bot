@@ -24,7 +24,6 @@ async def add_item_to_inventory(character_data, item_data):
 
         # Check if the item already exists in the user's inventory
         item_exists = await update_quantity_or_check_item_exists(character_document, item_document["inventory_field"], item_data, "add")
-        
         # If the iten does not exist, append it to the inventory
         logging.info(f"Item data: {character_document['inventory'][item_document['inventory_field']]}")
         if item_exists == False:
@@ -36,7 +35,7 @@ async def add_item_to_inventory(character_data, item_data):
             })
         # Update the user document with the modified inventory
         update = await db["characters"].update_one({"_id": character_document["_id"]}, 
-                                     {"$set": {"inventory.equipment": character_document["inventory"][item_document["inventory_field"]]}})
+                                     {"$set": {f"inventory.{item_document['inventory_field']}": character_document["inventory"][item_document["inventory_field"]]}})
         
         if update.modified_count < 0:
             return f"Item not added!: {item_data['name']}"
@@ -73,7 +72,7 @@ async def remove_item_from_inventory(character_data, item_data):
         if item_exists:
             # Update the user document with the modified inventory
             update = await db["characters"].update_one({"_id": character_document["_id"]}, 
-                             {"$set": {"inventory.equipment": character_document["inventory"][item_document["inventory_field"]]}})
+                             {"$set": {f"inventory.{item_document['inventory_field']}": character_document["inventory"][item_document["inventory_field"]]}})
         
             logging.info(f"Item removed: {item_document['name']}")
             if update.modified_count < 0:

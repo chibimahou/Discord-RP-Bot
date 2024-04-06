@@ -6,7 +6,7 @@ class inventory(app_commands.Group):
     @app_commands.command()
     async def add(self, interaction: discord.Interaction, item_name:str, item_quantity: int):
         item_data = {
-            "name": item_name,
+            "name": item_name.lower(),
             "quantity": item_quantity,
             "guild_id": interaction.guild.id
 
@@ -21,7 +21,7 @@ class inventory(app_commands.Group):
     @app_commands.command()
     async def remove(self, interaction: discord.Interaction, item_name:str, item_quantity: int):
         item_data = {
-            "name": item_name,
+            "name": item_name.lower(),
             "quantity": item_quantity,
             "guild_id": interaction.guild.id
 
