@@ -1,9 +1,11 @@
 import discord
 from discord import app_commands
 from datetime import datetime
+import requests
+import logging
 from utils.impl.charactersimpl import (create_logic, delete_logic, active_logic, 
                                        switch_active_logic, all_available_logic,
-                                        add_stat_logic, level_up_logic)
+                                        add_stat_logic, level_up_logic, message_logic)
 
 class characters(app_commands.Group):
     # To be implemented
@@ -82,8 +84,26 @@ class characters(app_commands.Group):
         results = await level_up_logic(discord_tag, guild_id)
         await interaction.response.send_message(results)
         
-    
-    #_______________________________________________________
+    # Send messages
+    @app_commands.command()
+    async def message(self, interaction: discord.Interaction, message: str):
+        character_data = {
+            "message": message,
+            "discord_tag": interaction.user.id,
+            "guild_id": interaction.guild.id       
+        }
+        test_image = "https://avatarfiles.alphacoders.com/264/264742.jpg"
+        results = await message_logic(character_data)
+        embed = discord.Embed(description=message, color=0x00ff00)
+        embed.set_author(name="test", icon_url=test_image)  # Set the author icon to the character image
+        data = {
+            "content": results,
+            "username": "username",
+            "avatar_url": test_image
+        }
+        response = requests.post("https://discord.com/api/webhooks/1226349364465635368/rxFyuk-B34LJ84AU7sVD6X7SCa-d7oYdP9BV3xe7xxhSqItDT0PHufBpqYbJq209Sc6O", json=data)
+        return response
+#_______________________________________________________
 
 async def setup(bot):
     bot.tree.add_command(characters(name="characters", description="Managing player profiles, stats, and inventory."))

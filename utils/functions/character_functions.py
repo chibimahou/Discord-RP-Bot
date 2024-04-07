@@ -96,6 +96,31 @@ async def active_character(discord_tag, guild_id):
     finally:
         await close_db_connection(client)
 
+# select active character name
+async def get_active_character(character_data):
+    client, db = await get_db_connection()
+    try:
+        character_document = await db["characters"].find_one(
+            {
+                "player.discord_tag": character_data['discord_tag'], 
+                "player.guild_id": character_data['guild_id'], 
+                "player.active": True
+            }
+        )
+        if character_document:
+            character_name = character_document["character"]["characters_name"]  # Accessing nested field
+            logging.debug(f"Active character found: {character_name}")
+            return character_document
+        else:
+            logging.debug("No active character found.")
+            return None
+    except Exception as e:
+        logging.exception(f"Error fetching active character: {e}")
+        return None
+    finally:
+        await close_db_connection(client)
+
+
 # Delete a character from the database
 async def delete_character(character_data):
     client, db = await get_db_connection()

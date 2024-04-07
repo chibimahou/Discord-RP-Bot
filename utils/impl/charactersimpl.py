@@ -5,11 +5,12 @@ from mysql.connector import Error
 
 from utils.functions.character_functions import (
                     active_character, available_characters, create_character_insert, create_character, 
-                    delete_character, switch_active_character, add_points_to_stat, level_up)
+                    delete_character, switch_active_character, add_points_to_stat, level_up, get_active_character)
 from utils.functions.database_functions import (
-                    get_db_connection)
+                    get_db_connection, close_db_connection)
 from utils.functions.validation_functions import (validate_alphanumeric, validate_height, validate_age, 
                     validate_text, validate_level)
+from utils.functions.utility_functions import comment_wrap
 
 async def create_logic(character_data, interaction):
     validators = {
@@ -97,3 +98,19 @@ async def level_up_logic(discord_tag, guild_id):
     message = await level_up(discord_tag, guild_id)
 
     return message
+
+async def message_logic(character_data):
+    client, db = await get_db_connection()
+    try:
+        character_document = await get_active_character(db, character_data)
+        if not character_document:
+            return "Character not found."
+        image_url = character_document.get("image_url", "")
+        # Construct your response message including the image URL
+        results = f"{character_document['character']['characters_name']}: {character_data['message']}\nImage URL: {character_document['player']['image']}"
+        return await comment_wrap(results)
+    except:
+        return "An error occurred while attempting to send the message."
+    finally:
+        await close_db_connection(client)
+        logging.debug(f"message_logic: Closed connection")

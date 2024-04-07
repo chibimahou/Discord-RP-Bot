@@ -25,9 +25,9 @@ async def add_item_to_database(character_data, item_data):
                         },
                         {
                             "$set": {
-                                f"inventory.{item_document["slot"]}.item_name": item_document["name"],
-                                f"inventory.{item_document["slot"]}._id": item_document["_id"],
-                                f"inventory.{item_document["slot"]}._id": 1
+                                f"inventory.{item_document['slot']}.item_name": item_document['name'],
+                                f"inventory.{item_document['slot']}._id": item_document['_id'],
+                                f"inventory.{item_document['slot']}._id": 1
                             }
                         })
         # If the update was successful, update the corresponding stat
