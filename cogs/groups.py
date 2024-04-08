@@ -17,8 +17,8 @@ class characters(app_commands.Group):
             "guild_id": interaction.guild.id         
         }
 
-        results = party_invite_logic(invite_data, interaction)
-        await results
+        results = party_invite_logic(invite_data)
+        await interaction.response.send_message(results)
     
     # Create a party
     @app_commands.command()

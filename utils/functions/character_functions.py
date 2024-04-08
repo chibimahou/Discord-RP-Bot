@@ -56,20 +56,10 @@ async def create_character_insert(character_data, guild_id):
                    "active": False}}
     return character_insert
     
-async def create_character(character_data):
-    client, db = await get_db_connection()
-    if db is None:
-        logging.error("Connection to MongoDB failed.")
-        return "Failed to connect to the database."
-    try:
-        # Insert the character data into the database
-        await db['characters'].insert_one(character_data)
-        return "Character successfully created!"
-    except Exception as e:
-        logging.exception(f"Error: {e}")
-        return "An error occurred while attempting to create the character."
-    finally:
-        await close_db_connection(client)
+async def create_character(db, character_data):
+    # Insert the character data into the database
+    await db['characters'].insert_one(character_data)
+    return "Character successfully created!"
         
 # select active character name
 async def active_character(db, character_data):
@@ -386,7 +376,6 @@ async def check_character_exists(db, character_data):
     return bool(await db["characters"].find_one(
         {
             "character.characters_name": character_data["characters_name"],
-            "player.discord_tag": character_data["discord_tag"],
             "player.guild_id": character_data["guild_id"]
         }))
     
