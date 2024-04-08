@@ -107,7 +107,7 @@ async def message_logic(character_data):
             return "Character not found."
         image_url = character_document.get("image_url", "")
         # Construct your response message including the image URL
-        results = f"{character_document['character']['characters_name']}: {character_data['message']}\nImage URL: {character_document['player']['image']}"
+        results = f"{character_data['message']}"
         return await comment_wrap(results)
     except:
         return "An error occurred while attempting to send the message."
