@@ -6,7 +6,7 @@ from mysql.connector import Error
 from utils.functions.character_functions import (
                     active_character, available_characters, create_character_insert, create_character, 
                     delete_character, switch_active_character, add_points_to_stat, level_up,
-                    check_character_exists)
+                    check_character_exists, get_character_by_name)
 from utils.functions.database_functions import (
                     get_db_connection, close_db_connection)
 from utils.functions.validation_functions import (validate_alphanumeric, validate_height, validate_age, 
@@ -85,13 +85,34 @@ async def delete_logic(character_data, interaction):
     finally:
         await close_db_connection(client)
         
-async def switch_active_logic(character_data, interaction):
+async def switch_active_logic(character_data):
     # Validate the character name
     if not validate_alphanumeric(character_data.get("characters_name", "")):
         logging.info("Invalid character name.")
         return "Invalid value for character name."
-    message = await switch_active_character(character_data)
-    return message
+    
+    try:
+        client, db = await get_db_connection()
+    except Exception as e:
+        logging.exception("Database connection failed: %s", e)
+        return await comment_wrap("Database connection failed.")
+    
+    try:
+        character_document = await active_character(db, character_data)
+        new_characters_document = await get_character_by_name(db, character_data)
+        if character_document is None:
+            logging.info("No characters found.")
+            return await comment_wrap("No characters found.")
+        status = await switch_active_character(db, character_data, character_document, new_characters_document)
+        if status:
+            return await comment_wrap(f"Active character switched to {character_data['characters_name']}!")
+        
+        return await comment_wrap(f"Please validate the information you provided is correct. \nNote: You can use the command `all_available` to see all available characters.")
+    except Exception as e:
+        logging.exception(f"Unexpected error: {e}")
+        return await comment_wrap("An unexpected error occurred.")
+    finally:
+        await close_db_connection(client)
         
 # Display all available characters for a user
 async def all_available_logic(character_data):

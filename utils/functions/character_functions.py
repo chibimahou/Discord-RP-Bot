@@ -112,40 +112,40 @@ async def delete_character(db, character_data):
         await close_db_connection(client)
         
 # Switch the active character for a user
-async def switch_active_character(character_data):
-    client, db = await get_db_connection()
-    try:
+async def switch_active_character(db, character_data, character_documnent, new_characters_document):
         #Validate that a character is active
-        active_character_name, message = await active_character(character_data["discord_tag"], character_data["guild_id"])
         # If there is an active character, set it to inactive
-        if active_character_name is not None:
-            # Set the old character as inactive
-            set_inactive = await db['characters'].update_one({"character.characters_name": active_character_name, 
-                                                   "player.discord_tag": character_data["discord_tag"],
-                                                   "player.guild_id": character_data["guild_id"]},
-                                                  {"$set": {"player.active": False}})
+            set_inactive = await set_active_status(db, character_documnent, False)
             # Validate if the character was set to inactive
-            if set_inactive.modified_count > 0:
-                logging.info(f"Character {active_character_name} set to inactive.")            
+            if set_inactive:
                 # Set the new character as active
-                set_active = await db['characters'].update_one({"character.characters_name": character_data["characters_name"], 
-                                            "player.discord_tag": character_data["discord_tag"],
-                                            "player.guild_id": character_data["guild_id"]},
-                                            {"$set": {"player.active": True}})
-                if set_active.modified_count > 0:
+                set_active = await set_active_status(db, new_characters_document, True)
+                if set_active:
                     logging.info(f"Character {character_data['characters_name']} set to active.")
-                    return f"You are now using the character {character_data['characters_name']}!"
+                    return True
+                else:
+                    logging.info(f"Failed to set {character_data['characters_name']} to active.")
+                    return False
             else:
-                logging.info(f"Failed to set {active_character_name} to inactive.")
-                return f"Failed to set {active_character_name} to inactive."
-        else:
-            return f"No active character found, please reach out to a moderator or admin."
-    except Exception as e:
-        logging.exception(f"Error in switch_active_character: {e}")
-        return f"An error occurred while attempting to switch your active character to {character_data['characters_name']}."
-    finally:
-        await close_db_connection(client)
+                logging.info(f"Failed to set {character_documnent['character']['characters_name']} to inactive.")
+                return False
         
+# Set a characters active status to False
+async def set_active_status(db, character_document, set_to):
+    logging.debug(f"{character_document['_id']}")
+    update = await db['characters'].update_one({"_id": character_document['_id']},
+                                                  {"$set": {"player.active": set_to}})
+    logging.debug(update.modified_count)
+    if update.modified_count > 0:
+        if set_to:
+            logging.info(f"Character {character_document['character']['characters_name']} set to active.")
+            return True
+        logging.info(f"Character {character_document['character']['characters_name']} set to inactive.")
+        return True
+    else:
+        logging.info(f"Failed to set {character_document['character']['characters_name']}'s active status")
+        return False
+    
 # return all characters for a user
 async def available_characters(character_data):
     client, db = await get_db_connection()
@@ -389,3 +389,12 @@ async def check_character_exists(db, character_data):
             "player.discord_tag": character_data["discord_tag"],
             "player.guild_id": character_data["guild_id"]
         }))
+    
+# Get a character by characters_name
+async def get_character_by_name(db, character_data):
+    return await db["characters"].find_one(
+        {
+            "character.characters_name": character_data["characters_name"],
+            "player.discord_tag": character_data["discord_tag"],
+            "player.guild_id": character_data["guild_id"]
+        })
