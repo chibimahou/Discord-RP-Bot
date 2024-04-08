@@ -22,7 +22,8 @@ class characters(app_commands.Group):
             "birthday": birthday,
             "bio": bio.lower(),
             "level": level,
-            "discord_tag": interaction.user.id          
+            "discord_tag": interaction.user.id,
+            "guild_id": interaction.guild.id    
         }
 
         results = await create_logic(character_data, interaction)
@@ -54,32 +55,45 @@ class characters(app_commands.Group):
     # View all characters a player currently has available  
     @app_commands.command()
     async def all_available(self, interaction: discord.Interaction):
-        discord_tag = interaction.user.id          
-        results = await all_available_logic(interaction, discord_tag)
+        character_data = {
+            "discord_tag": interaction.user.id,
+            "guild_id": interaction.guild.id       
+        }
+        results = await all_available_logic(character_data)
         await interaction.response.send_message(results)
         
     # Select a character from multiple characters listed under a user    
     @app_commands.command()
     async def active(self, interaction: discord.Interaction):
+        character_data = {
+            "discord_tag": interaction.user.id,
+            "guild_id": interaction.guild.id       
+        }
         # Fetch user data from the database
         discord_tag = interaction.user.id          
-        results = await active_logic(interaction, discord_tag)
+        results = await active_logic(character_data)
         await interaction.response.send_message(results)
 
     # Add stats to the user
     @app_commands.command()
     async def add_stat(self, interaction: discord.Interaction, stat_name:str, stat_value: int):
-        discord_tag = interaction.user.id
-        guild_id = interaction.guild.id
-        results = await add_stat_logic(discord_tag, guild_id, stat_name, stat_value)
+        character_data = {
+            "discord_tag": interaction.user.id,
+            "guild_id": interaction.guild.id,
+            "stat_name": stat_name,
+            "stat_value": stat_value
+        }
+        results = await add_stat_logic(character_data)
         await interaction.response.send_message(results)
 
     # Level up the user
     @app_commands.command()
     async def level_up(self, interaction: discord.Interaction):
-        discord_tag = interaction.user.id
-        guild_id = interaction.guild.id
-        results = await level_up_logic(discord_tag, guild_id)
+        character_data = {
+            "discord_tag": interaction.user.id,
+            "guild_id": interaction.guild.id
+        }
+        results = await level_up_logic(character_data)
         await interaction.response.send_message(results)
         
     

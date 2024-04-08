@@ -29,10 +29,9 @@ class characters(app_commands.Group):
             "discord_tag": interaction.user.id,
             "guild_id": interaction.guild.id         
         }
-
-        results = create_party_logic(party_data, interaction)
-        await results
-    #_______________________________________________________
+        results = await create_party_logic(party_data)
+        await interaction.response.send_message(results)
+        #_______________________________________________________
 
 async def setup(bot):
     bot.tree.add_command(characters(name="groups", description="Managing player parties, guild and any group related feature."))
