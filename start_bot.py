@@ -9,7 +9,10 @@ def run():
     intents = discord.Intents.default()
     intents.message_content = True
     bot = commands.Bot(command_prefix="!", intents=intents)
-    cogs = ["cogs.moderation", "cogs.characters", "cogs.combat", "cogs.economy", "cogs.interactions", "cogs.inventory", "cogs.life_actions", "cogs.quests", "cogs.skills", "cogs.utility"]
+    cogs = ["cogs.moderation", "cogs.characters", "cogs.combat", 
+            "cogs.economy", "cogs.interactions", "cogs.inventory", 
+            "cogs.life_actions", "cogs.quests", "cogs.skills", 
+            "cogs.utility", "cogs.groups"]
     
     @bot.event 
     async def on_ready():

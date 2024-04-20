@@ -18,7 +18,7 @@ def validate_age(input_str):
 def validate_date(input_str):
     """Validate string to be a valid date."""
     try:
-        datetime.strptime(input_str, "%m/%d/%y")
+        datetime.strptime(input_str, '%m/%d/%Y')
         return True
     except ValueError:
         return False
