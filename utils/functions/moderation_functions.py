@@ -19,15 +19,15 @@ async def add_item_to_database(character_data, item_data):
             return "Item not found"
         update = await db["characters"].insert_one(
                     {
-                            "player.discord_tag": character_data["discord_tag"],
-                            "player.guild_id": character_data["guild_id"],
+                            "player.discord_tag": character_data['discord_tag'],
+                            "player.guild_id": character_data['guild_id'],
                             "player.active": True
                         },
                         {
                             "$set": {
-                                f"inventory.{item_document["slot"]}.item_name": item_document["name"],
-                                f"inventory.{item_document["slot"]}._id": item_document["_id"],
-                                f"inventory.{item_document["slot"]}._id": 1
+                                f"inventory.{item_document['slot']}.item_name": item_document['name'],
+                                f"inventory.{item_document['slot']}._id": item_document['_id'],
+                                f"inventory.{item_document['slot']}._id": 1
                             }
                         })
         # If the update was successful, update the corresponding stat
