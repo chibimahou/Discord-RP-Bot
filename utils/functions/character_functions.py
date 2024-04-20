@@ -5,7 +5,7 @@ from utils.functions.database_functions import get_db_connection, close_db_conne
 #_______________________________________________________________________________________________________________________
 
 # add character data to an object
-async def create_character_insert(character_data, guild_id):
+async def create_character_insert(character_data):
     character_insert = {
     "character": {  "first_name": character_data["first_name"],
                         "last_name": character_data["last_name"],
@@ -52,7 +52,7 @@ async def create_character_insert(character_data, guild_id):
                 "current_hp": 10,
                 },
     "player": {"discord_tag": character_data["discord_tag"],
-                   "guild_id": guild_id,
+                   "guild_id": character_data["guild_id"],
                    "active": False}}
     return character_insert
     
@@ -70,9 +70,7 @@ async def active_character(db, character_data):
                 "player.active": True
             }
         )
-    logging.debug(f"Active character found: {character_document} discord tag: {character_data['discord_tag']} guild id: {character_data['guild_id']}")
     if character_document:
-        logging.debug(f"Active character found: {character_document['character']['characters_name']}")
         return character_document
     else:
         logging.debug("No active character found.")
@@ -189,8 +187,8 @@ async def add_points_to_stat(db, character_data):
                 if (update.modified_count > 0):
                     logging.debug(f"Stat: {character_document['stats'][converted_stat_name]} updated to {updated_stat_value} for {character_data['discord_tag']}")
                     # message = await update_combat(converted_stat_name, updated_stat_value, character_document["stats"][converted_stat_name], "add", character_data['discord_tag'], converted_stat_name['guild_id']) 
-                logging.info(f"{character_data['stat_value']} points added to {converted_stat_name} for {character_data['discord_tag']}")
-                return f"{character_data['stat_value']} points added to {converted_stat_name} for {character_data['discord_tag']}"
+                logging.info(f"{character_data['stat_value']} point(s) added to {converted_stat_name} for {character_data['discord_tag']}")
+                return f"{character_data['stat_value']} point(s) added to {converted_stat_name} for {character_data['discord_tag']}"
             else:
                 return f"You do not have enough stat points to distribute. Stat points remaining: {character_document['stats']['points_to_distribute']}"
 
@@ -383,7 +381,6 @@ async def check_character_exists(db, character_data):
 async def get_character_by_name(db, character_data):
     return await db["characters"].find_one(
         {
-            "character.characters_name": character_data["characters_name"],
-            "player.discord_tag": character_data["discord_tag"],
+            "character.characters_name": character_data['characters_name'],
             "player.guild_id": character_data["guild_id"]
         })

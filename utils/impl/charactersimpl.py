@@ -14,7 +14,7 @@ from utils.functions.validation_functions import (validate_alphanumeric, validat
 from utils.functions.utility_functions import comment_wrap
 
 
-async def create_logic(character_data, interaction):
+async def create_logic(character_data):
     validators = {
         "first_name": validate_alphanumeric,
         "last_name": validate_alphanumeric,
@@ -31,7 +31,7 @@ async def create_logic(character_data, interaction):
     for field, validator in validators.items():
         if field not in character_data or not validator(character_data[field]):
             logging.info(f"Invalid value for {field}.")
-            return f"Invalid value for {field}."
+            return await comment_wrap(f"Invalid value for {field}.")
 
     try:
         client, db = await get_db_connection()
@@ -42,26 +42,27 @@ async def create_logic(character_data, interaction):
     try:
         character_document = await active_character(db, character_data)
         # Now including the guild_id in character_data before insertion
-        character_insert = await create_character_insert(character_data, interaction.guild.id)
+        character_insert = await create_character_insert(character_data)
         # Check if character exists
         character_data["character_name"] = character_data["characters_name"]
         character_exists = await check_character_exists(db, character_data)
         if character_exists:
-            return "Character already exists."
+            return await comment_wrap("Character already exists.")
         # Validates if there is an active character, if not, sets the new character as active
-        logging.debug(f"character Document {character_exists}")
+        logging.debug(f"character Document: {character_document}")
         if character_document is None:
-            print("Active: True")
+            logging.debug("No Active Character")
             character_insert["player"]['active'] = True
         else:
-            print("Active: False")
+            logging.debug("Active Character Exists")
             character_insert["player"]['active'] = False
-            # Insert the character data into the database
-            await create_character(character_insert)
-            return "Character created successfully."
+        # Insert the character data into the database
+        await create_character(db, character_insert)
+        logging.debug("Character created successfully.")
+        return await comment_wrap("Character created successfully.")
     except Exception as e:
         logging.exception(f"Unexpected error: {e}")
-        return "An unexpected error occurred."
+        return await comment_wrap(f"An unexpected error occurred: {e}")
     finally:
         await close_db_connection(client)
                      
@@ -159,7 +160,7 @@ async def add_stat_logic(character_data):
         return await comment_wrap("Database connection failed.")
     try:
         message = await add_points_to_stat(db, character_data)
-        return message
+        return await comment_wrap(message)
     except Exception as e:
         logging.exception(f"Unexpected error: {e}")
         return await comment_wrap("An unexpected error occurred.")
