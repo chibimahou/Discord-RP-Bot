@@ -70,38 +70,44 @@ async def add_mob_logic( mob_data):
         return "An error occurred while adding the mob."
     
     
-async def remove_mob_logic(interaction, mob_data):
+async def remove_mob_logic(mob_name: str, guild_id: int):
     try:
+        # Establish database connection
         client, db = await get_db_connection()
         if db is None:
             return "Failed to connect to the database."
 
-        existing_mob = await check_if_mob_exists(mob_data)
-        if not existing_mob:
+        # Check if the mob exists
+        existing_mob = await db["mobs"].find_one({"mob_name": mob_name, "guild_id": guild_id})
+        if existing_mob is None:
             return "Mob not found."
 
-        result = await db["mobs"].delete_one({"mob_name": mob_data['mob_name'], "guild_id": mob_data['guild_id']})
+        # Delete the mob
+        result = await db["mobs"].delete_one({"mob_name": mob_name, "guild_id": guild_id})
         if result.deleted_count == 1:
-            return f"Mob '{mob_data['mob_name']}' deleted successfully!"
+            return f"Mob '{mob_name}' deleted successfully!"
         else:
-            return f"Failed to delete mob '{mob_data['mob_name']}'."
+            return f"Failed to delete mob '{mob_name}'."
 
     except Exception as e:
         logging.error(f"An error occurred: {e}")
         return "An error occurred while deleting the mob."
 
 
-async def view_mob_logic(interaction: discord.Interaction, query: str):
+
+async def view_mob_logic(guild_id: int, query: str):
     try:
         # Establish database connection
         client, db = await get_db_connection()
         
-
         if db is None:
             return "Failed to connect to the database."
 
-        # Define your search query based on the provided query string
-        search_query = {"$text": {"$search": query}}
+        # Define your search query based on the provided query string and guild ID
+        search_query = {
+            "$text": {"$search": query},
+            "guild_id": guild_id  # Filter by guild ID
+        }
 
         # Execute the query
         mobs = await db["mobs"].find(search_query).to_list(length=None)
@@ -117,6 +123,7 @@ async def view_mob_logic(interaction: discord.Interaction, query: str):
         return "An error occurred while searching for mobs."
 
 
+
 def format_mobs_info(mobs):
     if not mobs:
         return None
@@ -127,8 +134,18 @@ def format_mobs_info(mobs):
         formatted_info += f"Description: {mob['mob_description']}\n"
         formatted_info += f"Type: {mob['mob_type']}\n"
         formatted_info += f"Level: {mob['level']}\n"
+        formatted_info += f"hp: {mob['hp']}\n"
+        formatted_info += f"str: {mob['str']}\n"
+        formatted_info += f"Defense: {mob['defense']}\n"
+        formatted_info += f"spd: {mob['spd']}\n"
+        formatted_info += f"dex: {mob['dex']}\n"
+        formatted_info += f"cha: {mob['cha']}\n"
+        formatted_info += f"xp: {mob['xp']}\n"
+        formatted_info += f"spawn_message: {mob['spawn_message']}\n"
+        formatted_info += f"drops: {mob['drops']}\n"
+        formatted_info += f"spawn_channel: {mob['spawn_channel']}\n"
         formatted_info += "-------------------------\n"
-    
+        
     return formatted_info
 
 async def search_mob_info(interaction, search_query):

@@ -8,7 +8,7 @@ from cogs.utility import (validate_alphanumeric, validate_height, validate_age,
                      validate_date, validate_text, validate_level, get_db_connection,
                      close_db_connection, active_character)
 
-from utils.impl.moderationImpl import (add_item_logic, add_mob_logic, view_mob_logic, remove_mob_logic) 
+from utils.impl.moderationImpl import (add_item_logic, add_mob_logic, view_mob_logic, remove_mob_logic, check_if_mob_exists,) 
 
 
 
@@ -53,18 +53,28 @@ class moderation(app_commands.Group):
                     
                 })
                 
-        results = await add_mob_logic(mob_data)
-        await interaction.response.send_message(results)
+        # Check if a mob with the same name already exists in this guild
+        mob_exists: bool = await check_if_mob_exists(mob_data)
+
+        if mob_exists:
+            return "A mob with the same name already exists in this guild."
+        else:
+        # Add the mob to the database
+            result = await add_mob_logic(mob_data)
+        await interaction.response.send_message(result)
         
     @app_commands.command()    
-    async def remove_mob(self, mob_name: str):
-        result = await remove_mob_logic(mob_name)
-        await self.send_message(result)
+    async def remove_mob(self, interaction: discord.Interaction, mob_name: str):
+        guild_id = interaction.guild.id
+        result = await remove_mob_logic(mob_name, guild_id)
+        await interaction.response.send_message(result)
+
         
     @app_commands.command()
     async def view_mob(self, interaction: discord.Interaction, search_query: str):
-        result = await view_mob_logic(interaction, search_query)
+        result = await view_mob_logic(interaction.guild.id, search_query)  # Pass guild ID
         await interaction.response.send_message(result)
+
 
         
         
