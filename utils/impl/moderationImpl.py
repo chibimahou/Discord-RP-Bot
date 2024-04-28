@@ -46,14 +46,13 @@ def add_item_logic(interaction, item_data):
         return interaction.response.send_message("Error adding item to the database.")
     
 async def add_mob_logic(interaction, mob_data):
-<<<<<<< HEAD
+
     client,db = await get_db_connection()
     
-def add_mob_logic(interaction, mob_data):
+async def add_mob_logic(interaction, mob_data):
     db = get_db_connection()
-=======
     db = await get_db_connection()
->>>>>>> 71a5f20 (:()
+
     if db is None:
         return"Failed to connect to the database."
 

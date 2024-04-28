@@ -1,18 +1,10 @@
 import discord
 from discord import app_commands
-<<<<<<< HEAD
 class moderation(app_commands.Group):
     from cogs.utility import (validate_alphanumeric, validate_height, validate_age, 
                      validate_date, validate_text, validate_level, get_db_connection,
                      close_db_connection, active_character)
 from utils.impl.moderationImpl import (add_item_logic, add_mob_logic, delete_mob_logic, view_mob_logic)
-=======
-
-from cogs.utility import (validate_alphanumeric, validate_height, validate_age, 
-                     validate_date, validate_text, validate_level, get_db_connection,
-                     close_db_connection, active_character)
-from utils.impl.moderationImpl import (add_item_logic, add_mob_logic)
->>>>>>> aa06357 (add mob command)
 
 class moderation(app_commands.Group):
     # Select a character from multiple characters listed under a user    
@@ -31,15 +23,7 @@ class moderation(app_commands.Group):
         await interaction.response.send_message(results)
         
     @app_commands.command()    
-<<<<<<< HEAD
-<<<<<<< HEAD
     async def add_mobs(self, interaction: discord.Interaction, mob_name:str, mob_description:str, mob_type:str, floor:str, spawn_channel:str, level:str, hp:str, str:str, defense:str, spd:str, dex:str, cha:str, xp:str, spawn_message:str, ):
-=======
-    async def add_mobs(self, interaction: discord.Interaction, mob_name:str, mob_description:str, mob_type:str, floor:str, spawn_channel:str, level:str, hp:str, str:str, defense:str, spd:str, dex:str, cha:str ):
->>>>>>> aa06357 (add mob command)
-=======
-    async def add_mobs(self, interaction: discord.Interaction, mob_name:str, mob_description:str, mob_type:str, floor:str, spawn_channel:str, level:str, hp:str, str:str, defense:str, spd:str, dex:str, cha:str, xp:str, spawn_message:str, ):
->>>>>>> a7bfc20 (:))
      # Fetch user data from the database
         mob_data = {
             "mob_name": mob_name,
@@ -53,27 +37,12 @@ class moderation(app_commands.Group):
             "defense": defense,
             "spd": spd, 
             "dex": dex,
-<<<<<<< HEAD
-<<<<<<< HEAD
             "cha": cha, 
             "xp": xp,  
             "spawn_message": spawn_message,
         }
         results = await add_mob_logic(interaction, mob_data)
         await interaction.response.send_message(results) 
-<<<<<<< HEAD
-=======
-=======
-            "cha": cha,      
-=======
-            "cha": cha, 
-            "xp": xp,  
-            "spawn_message": spawn_message,
->>>>>>> a7bfc20 (:))
-        }
-        results = add_mob_logic(interaction, mob_data)
-        await interaction.response.send_message(results) 
->>>>>>> aa06357 (add mob command)
     
     @app_commands.command()
     async def delete_mob(self, interaction: discord.interaction, mob_name: str): 
@@ -109,8 +78,6 @@ async def fetch_mobs_info_by_floor(interaction, floor):
 
 async def search_mobs_info(interaction, search_query):
     return await view_mob_logic(interaction, search_query)
-
->>>>>>> dfc00fd (.)
 
     # Add stats to the user
     @app_commands.command()
