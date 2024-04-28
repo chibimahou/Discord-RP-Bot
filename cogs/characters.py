@@ -1,7 +1,9 @@
 import discord
 from discord import app_commands
 from datetime import datetime
-from utils.impl.charactersimpl import create_logic, delete_logic, active_logic, switch_active_logic, all_available_logic
+from utils.impl.charactersimpl import (create_logic, delete_logic, active_logic, 
+                                       switch_active_logic, all_available_logic,
+                                        add_stat_logic, level_up_logic)
 
 class characters(app_commands.Group):
     # To be implemented
@@ -32,7 +34,8 @@ class characters(app_commands.Group):
     async def delete_character(self, interaction: discord.Interaction, characters_name:str):
         character_data = {
             "characters_name": characters_name,
-            "discord_tag": interaction.user.id          
+            "discord_tag": interaction.user.id,
+            "guild_id": interaction.guild.id       
         }
         results = await delete_logic(character_data, interaction)
         await interaction.response.send_message(results)
@@ -42,7 +45,8 @@ class characters(app_commands.Group):
     async def switch_active(self, interaction: discord.Interaction, characters_name:str):
         character_data = {
             "characters_name": characters_name,
-            "discord_tag": interaction.user.id          
+            "discord_tag": interaction.user.id,
+            "guild_id": interaction.guild.id       
         }
         results =await switch_active_logic(character_data, interaction)
         await interaction.response.send_message(results)
@@ -62,6 +66,22 @@ class characters(app_commands.Group):
         results = await active_logic(interaction, discord_tag)
         await interaction.response.send_message(results)
 
+    # Add stats to the user
+    @app_commands.command()
+    async def add_stat(self, interaction: discord.Interaction, stat_name:str, stat_value: int):
+        discord_tag = interaction.user.id
+        guild_id = interaction.guild.id
+        results = await add_stat_logic(discord_tag, guild_id, stat_name, stat_value)
+        await interaction.response.send_message(results)
+
+    # Level up the user
+    @app_commands.command()
+    async def level_up(self, interaction: discord.Interaction):
+        discord_tag = interaction.user.id
+        guild_id = interaction.guild.id
+        results = await level_up_logic(discord_tag, guild_id)
+        await interaction.response.send_message(results)
+        
     
     #_______________________________________________________
 

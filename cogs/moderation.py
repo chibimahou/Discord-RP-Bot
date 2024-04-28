@@ -1,92 +1,72 @@
 import discord
 from discord import app_commands
+from utils.impl.moderationImpl import (search_mob_info)
+import random
+
 
 from cogs.utility import (validate_alphanumeric, validate_height, validate_age, 
                      validate_date, validate_text, validate_level, get_db_connection,
                      close_db_connection, active_character)
-<<<<<<< HEAD
-from utils.impl.moderationImpl import (add_item_logic, add_mob_logic, delete_mob_logic, view_mob_logic)
-=======
-from utils.impl.moderationImpl import (add_item_logic, add_mob_logic)
->>>>>>> 71a5f2039cd205af2fd3c1f79f79979b144b4c69
+
+from utils.impl.moderationImpl import (add_item_logic, add_mob_logic, view_mob_logic, remove_mob_logic) 
+
+
 
 class moderation(app_commands.Group):
-    # Select a character from multiple characters listed under a user    
-    @app_commands.command()
-    async def add_item(self, interaction: discord.Interaction, item_name:str, item_description:str, rarity:str, how_to_obtain:str, catagory:str, method_to_obtain:str):
-        # Fetch user data from the database
-        item_data = {
-            "item_name": item_name,
-            "item_description": item_description,
-            "rarity": rarity,  
-            "how_to_obtain": how_to_obtain,
-            "catagory": catagory,
-            "method_to_obtain": method_to_obtain      
+   
+    @app_commands.command()    
+    async def add_mobs(self, interaction: discord.Interaction, mob_name:str, mob_description:str, mob_type:str, floor:str, spawn_channel:str, level:str, hp:str, str:str, defense:str, spd:str, dex:str, cha:str, xp:str, spawn_message:str, spawn_amount:str, drops: str):
+    # Fetch user data from the database
+        mob_data = {
+        "mob_name": mob_name,
+        "mob_description": mob_description,
+        "mob_type": mob_type,  
+        "floor": floor,
+        "spawn_channel": spawn_channel,
+        "level": level,
+        "hp": hp, 
+        "str": str,
+        "defense": defense,
+        "spd": spd, 
+        "dex": dex,
+        "cha": cha, 
+        "xp": xp,  
+        "spawn_message": spawn_message,
+        "guild_id": interaction.guild.id,
+        "spawn_amount": {
+            "min": 1,
+            "max": spawn_amount,
+            
+        },
+        "drops": []
+        
         }
-        results = add_item_logic(interaction, item_data)
+        
+        for drop in drops.split(','):
+            drop_info = drop.split(',')
+            if len(drop_info) == 3:
+                name, id, chance = drop_info
+                mob_data["drops"].append({ 
+                    "name": name,
+                    "id": id,
+                    "drop_chance": int(chance)
+                    
+                })
+                
+        results = await add_mob_logic(mob_data)
         await interaction.response.send_message(results)
         
     @app_commands.command()    
-    async def add_mobs(self, interaction: discord.Interaction, mob_name:str, mob_description:str, mob_type:str, floor:str, spawn_channel:str, level:str, hp:str, str:str, defense:str, spd:str, dex:str, cha:str, xp:str, spawn_message:str, ):
-     # Fetch user data from the database
-        mob_data = {
-            "mob_name": mob_name,
-            "mob_description": mob_description,
-            "mob_type": mob_type,  
-            "floor": floor,
-            "spawn_channel": spawn_channel,
-            "level": level,
-            "hp": hp, 
-            "str": str,
-            "defense": defense,
-            "spd": spd, 
-            "dex": dex,
-            "cha": cha, 
-            "xp": xp,  
-            "spawn_message": spawn_message,
-        }
-<<<<<<< HEAD
-    results = await add_mob_logic(interaction, mob_data)
-=======
-    results = add_mob_logic(interaction, mob_data)
->>>>>>> 71a5f2039cd205af2fd3c1f79f79979b144b4c69
-    await interaction.response.send_message(results) 
-    
-    @app_commands.command()
-    async def delete_mob(self, interaction: discord.interaction, mob_name: str): 
-        #Delete any mob from the database
-        deletion_result = await delete_mob_logic(interaction, mob_name)
-        await interaction.response.send_message(deletion_result)
+    async def remove_mob(self, mob_name: str):
+        result = await remove_mob_logic(mob_name)
+        await self.send_message(result)
         
-@app_commands.command()
-async def view_mobs(self, interaction: discord.Interaction, query: str):
-    if query.startswith("floor:"):
-        floor = query.replace("floor:", "").strip()  
-        mobs_info = await view_mob_logic(interaction, floor)
-    else:
-        mobs_info = await search_mobs_info(interaction, query)
+    @app_commands.command()
+    async def view_mob(self, interaction: discord.Interaction, search_query: str):
+        result = await view_mob_logic(interaction, search_query)
+        await interaction.response.send_message(result)
 
-    if not mobs_info:
-        await interaction.response.send_message("No mobs found matching the search query.")
-    else:
-        await interaction.response.send_message(mobs_info)
-
-
-async def fetch_mobs_info_by_floor(interaction, floor):
-    try:
-        # Call view_mob_logic to retrieve mobs information for the specified floor
-        mobs_info = await view_mob_logic(interaction, floor)
-
-        return mobs_info
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        return "An error occurred while fetching mob information."
-
-
-async def search_mobs_info(interaction, search_query):
-    return await view_mob_logic(interaction, search_query)
-
-
+        
+        
 async def setup(bot):
     bot.tree.add_command(moderation(name="mod", description="mod commands"))

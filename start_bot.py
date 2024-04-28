@@ -1,7 +1,6 @@
-import discord 
+import discord
 from cogs.utility import add_guild
 from discord.ext import commands
-from utils.connect import get_database
 from config.config import DISCORD_TOKEN
 import os
 import logging
@@ -14,7 +13,6 @@ def run():
     
     @bot.event 
     async def on_ready():
-        bot.db = get_database()  # Assign database to bot instance
         logging.debug(f'Logged in as {bot.user.name}')
 
         #Get external commands   

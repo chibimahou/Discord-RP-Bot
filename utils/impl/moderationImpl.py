@@ -1,9 +1,14 @@
+import logging
 import discord
 from discord import app_commands
+from utils.functions.moderation_functions import(check_if_mob_exists)
+
+
+
 
 from cogs.utility import (validate_alphanumeric, validate_height, validate_age, 
                      validate_date, validate_text, validate_level, get_db_connection,
-                     close_db_connection, active_character)
+                     close_db_connection, active_character,) 
 
 def add_item_logic(interaction, item_data):
     validators = {
@@ -44,59 +49,137 @@ def add_item_logic(interaction, item_data):
         print(f"Error: {e}")
         return interaction.response.send_message("Error adding item to the database.")
     
-async def add_mob_logic(interaction, mob_data):
-<<<<<<< HEAD
+async def add_mob_logic( mob_data):
     client,db = await get_db_connection()
-=======
-    db = await get_db_connection()
->>>>>>> 71a5f2039cd205af2fd3c1f79f79979b144b4c69
     if db is None:
         return"Failed to connect to the database."
 
     try:
         # Assuming 'Mobs' is a collection within your MongoDB database
         # Check if the mob already exists
-        existing_mob = db["Mobs"].find_one({"mob_name": mob_data["mob_name"], "floor": mob_data["floor"]})
-
+        existing_mob = await check_if_mob_exists(mob_data)
         if existing_mob:
             return "Mob already exists."
 
         # Insert the new mob data into the database
-        db.Mobs.insert_one(mob_data)
+        db.mobs.insert_one(mob_data)
 
         return "Mob added successfully!"
     except Exception as e:
         print(f"An error occurred: {e}")
         return "An error occurred while adding the mob."
-<<<<<<< HEAD
     
     
-async def delete_mob_logic(interaction, mob_name):
-    client, db = await get_db_connection()
-    if db is None:
-        return "Failed to connect to the database."
-
+async def remove_mob_logic(interaction, mob_data):
     try:
-        # Assuming 'Mobs' is a collection within your MongoDB database
-        # Check if the mob exists
-        existing_mob = db["Mobs"].find_one({"mob_name": mob_name})
+        client, db = await get_db_connection()
+        if db is None:
+            return "Failed to connect to the database."
 
+        existing_mob = await check_if_mob_exists(mob_data)
         if not existing_mob:
             return "Mob not found."
 
-        # Delete the mob from the database
-        db["Mobs"].delete_one({"mob_name": mob_name})
+        result = await db["mobs"].delete_one({"mob_name": mob_data['mob_name'], "guild_id": mob_data['guild_id']})
+        if result.deleted_count == 1:
+            return f"Mob '{mob_data['mob_name']}' deleted successfully!"
+        else:
+            return f"Failed to delete mob '{mob_data['mob_name']}'."
 
-        return f"Mob '{mob_name}' deleted successfully!"
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logging.error(f"An error occurred: {e}")
         return "An error occurred while deleting the mob."
 
-=======
->>>>>>> 71a5f2039cd205af2fd3c1f79f79979b144b4c69
+
+async def view_mob_logic(interaction: discord.Interaction, query: str):
+    try:
+        # Establish database connection
+        client, db = await get_db_connection()
+        
+
+        if db is None:
+            return "Failed to connect to the database."
+
+        # Define your search query based on the provided query string
+        search_query = {"$text": {"$search": query}}
+
+        # Execute the query
+        mobs = await db["mobs"].find(search_query).to_list(length=None)
+
+        if not mobs:
+            return "No mobs found matching the search query."
+        else:
+            # Format the mobs information into a readable format
+            formatted_info = format_mobs_info(mobs)
+            return formatted_info
+
+    except Exception as e:
+        return "An error occurred while searching for mobs."
 
 
-            
+def format_mobs_info(mobs):
+    if not mobs:
+        return None
+    
+    formatted_info = ""
+    for mob in mobs:
+        formatted_info += f"Name: {mob['mob_name']}\n"
+        formatted_info += f"Description: {mob['mob_description']}\n"
+        formatted_info += f"Type: {mob['mob_type']}\n"
+        formatted_info += f"Level: {mob['level']}\n"
+        formatted_info += "-------------------------\n"
+    
+    return formatted_info
+
+async def search_mob_info(interaction, search_query):
+    try:
+        logging.debug(f"Received search query: {search_query}")
+
+        # Get the database connection
+        client,db = await get_db_connection()
+        logging.debug(f"Database connection: {db}")
+
+        # Execute the query
+        mobs = await db["mobs"].find({"mob_name": search_query}).to_list(length=None)
+        logging.debug(f"Retrieved mobs: {mobs}")
+
+        if not mobs:
+            return "No mobs found matching the search query."
+
+        # Log the structure of the mobs variable
+        logging.debug(f"Type of mobs: {type(mobs)}")
+        logging.debug(f"Length of mobs: {len(mobs)}")
+        logging.debug(f"First mob: {mobs[0]}")
+
+        # Format the mobs information into a readable format
+        formatted_info = ""
+        for mob in mobs:
+            formatted_info += f"mob_name: {mob['mob_name']}\n"
+            formatted_info += f"Description: {mob['mob_description']}\n"
+            formatted_info += f"Type: {mob['mob_type']}\n"
+            formatted_info += f"Level: {mob['level']}\n"
+            formatted_info += f"hp: {mob['hp']}\n"
+            formatted_info += f"Strength: {mob['str']}\n"
+            formatted_info += f"Defense: {mob['defense']}\n"
+            formatted_info += f"Speed: {mob['spd']}\n"
+            formatted_info += f"Dexterity: {mob['dex']}\n"
+            formatted_info += f"Charisma: {mob['cha']}\n"
+            formatted_info += f"Experience_Points: {mob['xp']}\n"
+            formatted_info += f"Spawn_Message: {mob['spawn_message']}\n"
+            formatted_info += f"drops: {mob['drops']}\n"
+            formatted_info += f"spawn_location: {mob['spawn_location']}\n"
+            formatted_info += "-------------------------\n"
+
+        return formatted_info
+        
+    except Exception as e:
+        logging.error(f"An error occurred while searching for mobs: {e}")
+        return "An error occurred while searching for mobs."
+
+
+
+
+
 def active_character_logic(interaction, discord_tag):
     username = active_character(discord_tag)
     return interaction.response.send_message(f"Your active character is {username}!")
