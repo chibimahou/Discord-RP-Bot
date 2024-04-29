@@ -12,6 +12,7 @@ from utils.functions.database_functions import (get_db_connection, close_db_conn
 from utils.functions.utility_functions import (comment_wrap)
 
 
+
 class PartyInviteView(discord.ui.View):
     def __init__(self, invitee: discord.Member, *args, **kwargs):
         super().__init__(*args, **kwargs)

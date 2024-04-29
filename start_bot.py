@@ -1,4 +1,4 @@
-import discord 
+import discord
 from cogs.utility import add_guild
 from discord.ext import commands
 from config.config import DISCORD_TOKEN
