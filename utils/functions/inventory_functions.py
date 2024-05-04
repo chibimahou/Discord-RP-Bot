@@ -7,6 +7,11 @@ from utils.functions.utility_functions import comment_wrap
 # Characters
 #_______________________________________________________________________________________________________________________
 
+# Get equipped item
+async def get_equipment(db, item_data):
+    item = await get_item(db, item_data)
+    return item
+
 # add character data to an object
 async def add_item_to_inventory(character_data, item_data):
     client, db = await get_db_connection()
@@ -148,3 +153,32 @@ async def update_quantity_or_check_item_exists(character_document, inventory_fie
             logging.info(f"Item quantity updated: {character_document['inventory'][inventory_field]}")
             return True
     return False
+
+# Equip an item from the user's inventory
+async def equip(character_document, item_document):
+    # Equip the item
+    update = character_document["equipment"][item_document["slot"]] = {
+        "oid": item_document["_id"]
+    }
+    # Check if item was equipped
+    if update:
+        return True
+    return False
+
+async def item_exists_in_inventory(character_document, item_document):
+    return None
+
+async def get_equipped_item(db, character_document, item_name):
+    return None
+
+async def unequip(db, character_document, currently_equipped, item_name):
+    return None
+
+async def item_exists_in_inventory(character_document, item_document):
+    return None
+
+async def item_exists_in_inventory(character_document, item_document):
+    return None
+
+async def item_exists_in_inventory(character_document, item_document):
+    return None

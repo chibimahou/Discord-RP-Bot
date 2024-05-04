@@ -27,24 +27,5 @@ def run():
                 logging.exception(f"Failed to load {cog}: {e}")
         #sync with discord
         await bot.tree.sync()
-
-    @bot.event
-    async def on_guild_join(guild):
-        logging.info(f"Joined a new guild: {guild.name}")
-        add_guild(guild.id, guild.name)
-            
-    @bot.event
-    async def on_command_error(ctx, error):
-        if isinstance(error, commands.CommandNotFound):
-            await ctx.send("Command not found.")
-        elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("Missing required argument.")
-        elif isinstance(error, commands.MissingPermissions):
-            await ctx.send("You don't have the required permissions to run this command.")
-        elif isinstance(error, commands.BotMissingPermissions):
-            await ctx.send("I don't have the required permissions to run this command.")
-        else:
-            await ctx.send("An error occurred.")
-            raise error
         
     bot.run(DISCORD_TOKEN)

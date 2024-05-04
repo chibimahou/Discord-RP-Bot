@@ -1,5 +1,6 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from config.config import (DB_NAME, DB_USERNAME, DB_PASSWORD, DB_HOST, URI)
+import copy
 
 # Database
 #_______________________________________________________________________________________________________________________
@@ -19,3 +20,6 @@ async def close_db_connection(client):
     # Explicitly closing connection is often not necessary, but if you need to, you can call client.close()
     client.close()
     
+async def create_copy(document):
+    backup_document = copy.deepcopy(document)
+    return backup_document

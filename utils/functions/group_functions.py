@@ -59,22 +59,6 @@ async def party_exists(db, party_data, character_document):
     return bool(party_document)
 
 # ______________________________________________________________________________________________________________________            
-# Check if a party invite exists between two users
-# Return: Boolean 
-# ______________________________________________________________________________________________________________________   
-
-async def invite_exists(db, character_document, second_character_document, invite_type):
-    logging.debug(f"Invite Exists: Party data: {character_document['_id']} and {second_character_document['_id']}")
-    if invite_type == "party":
-        party_document = await db["invites"].find_one({
-            "inviter_id": character_document['_id'],
-            "invitee_id": second_character_document['_id'],
-            "invite_type": invite_type
-        })
-    logging.debug(f"Invite Exists: Party document: {party_document}")
-    return bool(party_document)
-
-# ______________________________________________________________________________________________________________________            
 # Send an invite to a user to join a party
 # Return: Boolean 
 # ______________________________________________________________________________________________________________________   
@@ -83,7 +67,7 @@ async def send_invite(db, invite_data, inviter_character_document, invitee_chara
     party_insert = {
         "inviter_id": inviter_character_document['_id'],
         "invitee_id": invitee_character_document['_id'],
-        "invite_type": "party",
+        "invite_type": invite_data["invite_type"],
         "guild_id": invite_data["guild_id"],
         "status": "Pending",
         "creation_date": invite_data["creation_date"]

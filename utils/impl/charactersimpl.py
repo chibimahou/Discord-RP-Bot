@@ -1,14 +1,13 @@
-import discord
 import logging
 from discord import app_commands
-from mysql.connector import Error
 
 from utils.functions.character_functions import (
                     active_character, available_characters, create_character_insert, create_character, 
                     delete_character, switch_active_character, add_points_to_stat, level_up,
-                    check_character_exists, get_character_by_name)
+                    check_character_exists, get_character_by_name, convert_stat_name, update_combat_stats)
 from utils.functions.database_functions import (
-                    get_db_connection, close_db_connection)
+                    get_db_connection, close_db_connection, create_copy)
+from utils.functions.inventory_functions import (get_equipment)
 from utils.functions.validation_functions import (validate_alphanumeric, validate_height, validate_age, 
                     validate_text, validate_level, validate_date)
 from utils.functions.utility_functions import comment_wrap
@@ -132,6 +131,7 @@ async def all_available_logic(character_data):
         return "An error occurred while attempting to display the characters."
 
 async def active_logic(character_data):
+    print(type(character_data))
     try:
         client, db = await get_db_connection()
     except Exception as e:
@@ -158,9 +158,46 @@ async def add_stat_logic(character_data):
     except Exception as e:
         logging.exception("Database connection failed: %s", e)
         return await comment_wrap("Database connection failed.")
+    
     try:
-        message = await add_points_to_stat(db, character_data)
-        return await comment_wrap(message)
+        character_data['stat_name'] = await convert_stat_name(character_data['stat_name'].lower())
+        character_document = await active_character(db, character_data)
+        if(character_data["stat_name"] == "str" or character_data["stat_name"] == "dex"):
+            item_data = {
+                "name": character_document['equipped']['left_hand']['name'],
+                "guild_id": character_data["guild_id"]
+            }
+        elif(character_data["stat_name"] == "def"):
+            item_data = {
+                "name": character_document["equipped"]["body"]["name"],
+                "guild_id": character_data["guild_id"]
+            }
+        item_document = await get_equipment(db, item_data)
+        # Get remaining points to distribute
+        remaining_points = character_document['stats']['base']['points_to_distribute']
+        # Check if the points to distribute are greater than the points the character has
+        if remaining_points < character_data["stat_value"]:
+            return await comment_wrap(f"You do not have enough points to distribute. You have {remaining_points} points to distribute.")
+        # Create a backup of the characters original stats and points to distribute
+        bkp_character_data = character_document
+        points_added = await add_points_to_stat(db, character_data, character_document)
+        if points_added:
+            updated_character_document = await active_character(db, character_data)
+            # Update the combat stats
+            combat_fields_updated = await update_combat_stats(db, updated_character_document, item_document, character_data['stat_name'])
+            # If the combat fields were updated return success.
+            if combat_fields_updated:
+                return await comment_wrap(f"Points added successfully to " + character_data["stat_name"] + ".")
+            # revert the changes
+            else:
+                reverted_changes = await db["characters"].update_one({"_id": updated_character_document["_id"]},
+                                                                     {"$set": bkp_character_data})
+                # If the changes were reverted, return failed to update combat stats
+                if reverted_changes:
+                    return await comment_wrap(f"Failed to update combat stats.")
+                logging.info(f"Failed to revert stats to normal for {updated_character_document['characters']['character_name']}.\nstat: {character_data['stat_name']}. points distributed: {character_data['stat_value']}.")
+                return await comment_wrap(f"Failed to update combat stats.")
+        return await comment_wrap(f"Failed to add points to " + character_data["stat"] + ".")
     except Exception as e:
         logging.exception(f"Unexpected error: {e}")
         return await comment_wrap("An unexpected error occurred.")

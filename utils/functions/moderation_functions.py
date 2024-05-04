@@ -40,3 +40,42 @@ async def add_item_to_database(character_data, item_data):
         return f""
     finally:
         await close_db_connection(client)    
+         
+#_______________________________________________________________________________________________________________________
+# Toggle function between enabled and disabled for specific servers
+#_______________________________________________________________________________________________________________________
+async def toggle_functions(function_name, guild_id):
+    client, db = await get_db_connection()
+    try:
+        # Check if function is enabled or disabled in allowed_functions collection
+        function_document = await db["allowed_functions"].find_one({
+            "function_name": function_name,
+            "guild_id": guild_id
+        })
+        # If the function is not found, create it and disable it
+        if not function_document:
+            await db["allowed_functions"].insert_one({
+                "function_name": function_name,
+                "guild_id": guild_id,
+                "enabled": False
+            })
+            return f"{function_name} is now disabled."
+        # If the function is found, toggle the enabled status
+        else:
+            enabled = not function_document["enabled"]
+            await db["allowed_functions"].update_one({
+                "function_name": function_name,
+                "guild_id": guild_id
+            }, {
+                "$set": {
+                    "enabled": enabled
+                }
+            })
+            return f"{function_name} is now {'enabled' if enabled else 'disabled'}."
+        
+    except Exception as e:
+        logging.exception(f"Error toggling {function_name}: {e}")
+        return f"Error toggling {function_name}."
+    
+    finally:
+        await close_db_connection(client)

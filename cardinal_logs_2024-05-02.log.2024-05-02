@@ -1,0 +1,160 @@
+2024-05-02 09:05:02 - discord.client - WARNING: PyNaCl is not installed, voice will NOT be supported
+2024-05-02 09:05:02 - discord.client - DEBUG: on_ready has successfully been registered as an event
+2024-05-02 09:05:02 - discord.client - DEBUG: on_guild_join has successfully been registered as an event
+2024-05-02 09:05:02 - discord.client - DEBUG: on_command_error has successfully been registered as an event
+2024-05-02 09:05:02 - asyncio - DEBUG: Using proactor: IocpProactor
+2024-05-02 09:05:02 - discord.client - INFO: logging in using static token
+2024-05-02 09:05:03 - discord.gateway - INFO: Shard ID None has connected to Gateway (Session ID: 7c48da0219ae454b0976f1714453c9ca).
+2024-05-02 09:05:05 - root - DEBUG: Logged in as RpApp_Dev
+2024-05-02 09:05:05 - root - DEBUG: Loaded cogs.moderation
+2024-05-02 09:05:05 - root - DEBUG: Loaded cogs.characters
+2024-05-02 09:05:05 - root - DEBUG: Loaded cogs.combat
+2024-05-02 09:05:05 - root - DEBUG: Loaded cogs.economy
+2024-05-02 09:05:05 - root - DEBUG: Loaded cogs.interactions
+2024-05-02 09:05:05 - root - DEBUG: Loaded cogs.inventory
+2024-05-02 09:05:05 - root - DEBUG: Loaded cogs.life_actions
+2024-05-02 09:05:05 - root - DEBUG: Loaded cogs.quests
+2024-05-02 09:05:05 - root - DEBUG: Loaded cogs.skills
+2024-05-02 09:05:05 - root - DEBUG: Loaded cogs.utility
+2024-05-02 09:05:05 - root - DEBUG: Loaded cogs.groups
+2024-05-02 09:05:11 - pymongo.serverSelection - DEBUG: {"message": "Server selection started", "selector": "Primary()", "operation": "find", "topologyDescription": "<TopologyDescription id: 66338f87e6e80ddff94b5a44, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None>]>", "clientId": {"$oid": "66338f87e6e80ddff94b5a44"}}
+2024-05-02 09:05:11 - pymongo.serverSelection - INFO: {"message": "Waiting for suitable server to become available", "selector": "Primary()", "operation": "find", "topologyDescription": "<TopologyDescription id: 66338f87e6e80ddff94b5a44, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None>]>", "clientId": {"$oid": "66338f87e6e80ddff94b5a44"}, "remainingTimeMS": 30}
+2024-05-02 09:05:11 - pymongo.serverSelection - DEBUG: {"message": "Server selection succeeded", "selector": "Primary()", "operation": "find", "topologyDescription": "<TopologyDescription id: 66338f87e6e80ddff94b5a44, topology_type: Single, servers: [<ServerDescription ('localhost', 27017) server_type: Standalone, rtt: 0.0>]>", "clientId": {"$oid": "66338f87e6e80ddff94b5a44"}, "serverHost": "localhost", "serverPort": 27017}
+2024-05-02 09:05:11 - pymongo.command - DEBUG: {"clientId": {"$oid": "66338f87e6e80ddff94b5a44"}, "message": "Command started", "command": "{\"find\": \"characters\", \"filter\": {\"player.discord_tag\": 148296948703559681, \"player.guild_id\": 962908877576351744, \"player.active\": true}, \"limit\": 1, \"singleBatch\": true, \"lsid\": {\"id\": {\"$binary\": {\"base64\": \"gS2Vp1LfTiiIOA1WVMoeog==\", \"subType\": \"04\"}}}, \"$db\": \"rp_bot\"}", "commandName": "find", "databaseName": "rp_bot", "requestId": 18467, "operationId": 18467, "driverConnectionId": 1, "serverConnectionId": 2, "serverHost": "localhost", "serverPort": 27017}
+2024-05-02 09:05:11 - pymongo.command - DEBUG: {"clientId": {"$oid": "66338f87e6e80ddff94b5a44"}, "message": "Command succeeded", "durationMS": 21.0, "reply": "{\"cursor\": {\"ns\": \"rp_bot.characters\"}, \"ok\": 1.0}", "commandName": "find", "databaseName": "rp_bot", "requestId": 18467, "operationId": 18467, "driverConnectionId": 1, "serverConnectionId": 2, "serverHost": "localhost", "serverPort": 27017}
+2024-05-02 09:05:11 - root - DEBUG: No active character found.
+2024-05-02 09:05:11 - root - INFO: No characters found.
+2024-05-02 09:05:11 - pymongo.serverSelection - DEBUG: {"message": "Server selection started", "selector": "PrimaryPreferred(tag_sets=None, max_staleness=-1, hedge=None)", "operation": "endSessions", "topologyDescription": "<TopologyDescription id: 66338f87e6e80ddff94b5a44, topology_type: Single, servers: [<ServerDescription ('localhost', 27017) server_type: Standalone, rtt: 0.0>]>", "clientId": {"$oid": "66338f87e6e80ddff94b5a44"}}
+2024-05-02 09:05:11 - pymongo.serverSelection - DEBUG: {"message": "Server selection succeeded", "selector": "PrimaryPreferred(tag_sets=None, max_staleness=-1, hedge=None)", "operation": "endSessions", "topologyDescription": "<TopologyDescription id: 66338f87e6e80ddff94b5a44, topology_type: Single, servers: [<ServerDescription ('localhost', 27017) server_type: Standalone, rtt: 0.0>]>", "clientId": {"$oid": "66338f87e6e80ddff94b5a44"}, "serverHost": "localhost", "serverPort": 27017}
+2024-05-02 09:05:11 - pymongo.command - DEBUG: {"clientId": {"$oid": "66338f87e6e80ddff94b5a44"}, "message": "Command started", "command": "{\"endSessions\": [{\"id\": {\"$binary\": {\"base64\": \"gS2Vp1LfTiiIOA1WVMoeog==\", \"subType\": \"04\"}}}], \"$db\": \"admin\"}", "commandName": "endSessions", "databaseName": "admin", "requestId": 41, "operationId": 41, "driverConnectionId": 1, "serverConnectionId": 2, "serverHost": "localhost", "serverPort": 27017}
+2024-05-02 09:05:11 - pymongo.command - DEBUG: {"clientId": {"$oid": "66338f87e6e80ddff94b5a44"}, "message": "Command succeeded", "durationMS": 1.0, "reply": "{\"ok\": 1.0}", "commandName": "endSessions", "databaseName": "admin", "requestId": 41, "operationId": 41, "driverConnectionId": 1, "serverConnectionId": 2, "serverHost": "localhost", "serverPort": 27017}
+2024-05-02 14:50:39 - discord.client - WARNING: PyNaCl is not installed, voice will NOT be supported
+2024-05-02 14:50:39 - discord.client - DEBUG: on_ready has successfully been registered as an event
+2024-05-02 14:50:39 - discord.client - DEBUG: on_guild_join has successfully been registered as an event
+2024-05-02 14:50:39 - discord.client - DEBUG: on_command_error has successfully been registered as an event
+2024-05-02 14:50:39 - asyncio - DEBUG: Using proactor: IocpProactor
+2024-05-02 14:50:39 - discord.client - INFO: logging in using static token
+2024-05-02 14:50:40 - discord.gateway - INFO: Shard ID None has connected to Gateway (Session ID: 39cab84bc68d95a9d501ab4c8b1bb369).
+2024-05-02 14:50:42 - root - DEBUG: Logged in as RpApp_Dev
+2024-05-02 14:50:42 - root - DEBUG: Loaded cogs.moderation
+2024-05-02 14:50:42 - root - DEBUG: Loaded cogs.characters
+2024-05-02 14:50:42 - root - DEBUG: Loaded cogs.combat
+2024-05-02 14:50:42 - root - DEBUG: Loaded cogs.economy
+2024-05-02 14:50:42 - root - DEBUG: Loaded cogs.interactions
+2024-05-02 14:50:42 - root - DEBUG: Loaded cogs.inventory
+2024-05-02 14:50:42 - root - DEBUG: Loaded cogs.life_actions
+2024-05-02 14:50:42 - root - DEBUG: Loaded cogs.quests
+2024-05-02 14:50:42 - root - DEBUG: Loaded cogs.skills
+2024-05-02 14:50:42 - root - DEBUG: Loaded cogs.utility
+2024-05-02 14:50:42 - root - DEBUG: Loaded cogs.groups
+2024-05-02 14:52:27 - discord.client - WARNING: PyNaCl is not installed, voice will NOT be supported
+2024-05-02 14:52:27 - discord.client - DEBUG: on_ready has successfully been registered as an event
+2024-05-02 14:52:27 - discord.client - DEBUG: on_guild_join has successfully been registered as an event
+2024-05-02 14:52:27 - discord.client - DEBUG: on_command_error has successfully been registered as an event
+2024-05-02 14:52:27 - asyncio - DEBUG: Using proactor: IocpProactor
+2024-05-02 14:52:27 - discord.client - INFO: logging in using static token
+2024-05-02 14:52:28 - discord.gateway - INFO: Shard ID None has connected to Gateway (Session ID: e4329107fe3d1ccdbde334c886f5c4f5).
+2024-05-02 14:52:30 - root - DEBUG: Logged in as RpApp_Dev
+2024-05-02 14:52:30 - root - DEBUG: Loaded cogs.moderation
+2024-05-02 14:52:30 - root - DEBUG: Loaded cogs.characters
+2024-05-02 14:52:30 - root - DEBUG: Loaded cogs.combat
+2024-05-02 14:52:30 - root - DEBUG: Loaded cogs.economy
+2024-05-02 14:52:30 - root - DEBUG: Loaded cogs.interactions
+2024-05-02 14:52:30 - root - DEBUG: Loaded cogs.inventory
+2024-05-02 14:52:30 - root - DEBUG: Loaded cogs.life_actions
+2024-05-02 14:52:30 - root - DEBUG: Loaded cogs.quests
+2024-05-02 14:52:30 - root - DEBUG: Loaded cogs.skills
+2024-05-02 14:52:30 - root - DEBUG: Loaded cogs.utility
+2024-05-02 14:52:30 - root - DEBUG: Loaded cogs.groups
+2024-05-02 14:53:11 - pymongo.serverSelection - DEBUG: {"message": "Server selection started", "selector": "Primary()", "operation": "find", "topologyDescription": "<TopologyDescription id: 6633e117134385eb90654dc0, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None>]>", "clientId": {"$oid": "6633e117134385eb90654dc0"}}
+2024-05-02 14:53:11 - pymongo.serverSelection - INFO: {"message": "Waiting for suitable server to become available", "selector": "Primary()", "operation": "find", "topologyDescription": "<TopologyDescription id: 6633e117134385eb90654dc0, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None>]>", "clientId": {"$oid": "6633e117134385eb90654dc0"}, "remainingTimeMS": 30}
+2024-05-02 14:53:11 - pymongo.serverSelection - DEBUG: {"message": "Server selection succeeded", "selector": "Primary()", "operation": "find", "topologyDescription": "<TopologyDescription id: 6633e117134385eb90654dc0, topology_type: Single, servers: [<ServerDescription ('localhost', 27017) server_type: Standalone, rtt: 0.0>]>", "clientId": {"$oid": "6633e117134385eb90654dc0"}, "serverHost": "localhost", "serverPort": 27017}
+2024-05-02 14:53:11 - pymongo.command - DEBUG: {"clientId": {"$oid": "6633e117134385eb90654dc0"}, "message": "Command started", "command": "{\"find\": \"characters\", \"filter\": {\"player.discord_tag\": 148296948703559681, \"player.guild_id\": 895098262510501898, \"player.active\": true}, \"limit\": 1, \"singleBatch\": true, \"lsid\": {\"id\": {\"$binary\": {\"base64\": \"wbSP19dCRJWKb1W2jOs5qg==\", \"subType\": \"04\"}}}, \"$db\": \"rp_bot\"}", "commandName": "find", "databaseName": "rp_bot", "requestId": 18467, "operationId": 18467, "driverConnectionId": 1, "serverConnectionId": 5, "serverHost": "localhost", "serverPort": 27017}
+2024-05-02 14:53:11 - pymongo.command - DEBUG: {"clientId": {"$oid": "6633e117134385eb90654dc0"}, "message": "Command succeeded", "durationMS": 2.016, "reply": "{\"cursor\": {\"firstBatch\": [{\"_id\": {\"$oid\": \"662d878e200282de4f3b7af4\"}, \"character\": {\"first_name\": \"kotori\", \"last_name\": \"umi\", \"characters_name\": \"chibi\", \"class\": \"None\", \"cursor_color\": \"Green\", \"height\": \"1'2\"\", \"physique\": \"small\", \"age\": \"12\", \"birthday\": \"1/2/1221\", \"bio\": \"test\", \"level\": 7, \"experience_to_next_level\": 100}, \"inventory\": {\"equipment\": [{\"oid\": {\"$oid\": \"62b764c7f83b123456789abc\"}, \"name\": \"bronze sword\", \"quantity\": 2}]}, \"stats\": {\"base\": {\"hp\": 10, \"str\": 23, \"def\": 5, \"spe\": 5, \"dex\": 5, \"cha\": 5}, \"modified\": {\"hp\": 10, \"str\": 13, \"def\": 5, \"spe\": 5, \"dex\": 5, \"cha\": 5}}, \"combat\": {\"damage\": 13, \"defense\": 10, \"current_hp\": 10}, \"player\": {\"discord_tag\": 148296948703559681, \"guild_id\": 895098262510501898, \"active\": true}, \"equipped\": {\"head\": {\"modifier\": 1}, \"chest\": {\"modifier\": 1}, \"legs\": {\"modifier\": 1}, \"arms\": {\"modifier\": 1}, \"accessory1\": {\"modifier\": 1}, \"accessory2\": {\"modifier\": 1}, \"left_hand\": {\"modifier\": 1, \"atk_type\": \"str\"}, \"right_ha...", "commandName": "find", "databaseName": "rp_bot", "requestId": 18467, "operationId": 18467, "driverConnectionId": 1, "serverConnectionId": 5, "serverHost": "localhost", "serverPort": 27017}
+2024-05-02 14:53:11 - pymongo.serverSelection - DEBUG: {"message": "Server selection started", "selector": "PrimaryPreferred(tag_sets=None, max_staleness=-1, hedge=None)", "operation": "endSessions", "topologyDescription": "<TopologyDescription id: 6633e117134385eb90654dc0, topology_type: Single, servers: [<ServerDescription ('localhost', 27017) server_type: Standalone, rtt: 0.0>]>", "clientId": {"$oid": "6633e117134385eb90654dc0"}}
+2024-05-02 14:53:11 - pymongo.serverSelection - DEBUG: {"message": "Server selection succeeded", "selector": "PrimaryPreferred(tag_sets=None, max_staleness=-1, hedge=None)", "operation": "endSessions", "topologyDescription": "<TopologyDescription id: 6633e117134385eb90654dc0, topology_type: Single, servers: [<ServerDescription ('localhost', 27017) server_type: Standalone, rtt: 0.0>]>", "clientId": {"$oid": "6633e117134385eb90654dc0"}, "serverHost": "localhost", "serverPort": 27017}
+2024-05-02 14:53:11 - pymongo.command - DEBUG: {"clientId": {"$oid": "6633e117134385eb90654dc0"}, "message": "Command started", "command": "{\"endSessions\": [{\"id\": {\"$binary\": {\"base64\": \"wbSP19dCRJWKb1W2jOs5qg==\", \"subType\": \"04\"}}}], \"$db\": \"admin\"}", "commandName": "endSessions", "databaseName": "admin", "requestId": 41, "operationId": 41, "driverConnectionId": 1, "serverConnectionId": 5, "serverHost": "localhost", "serverPort": 27017}
+2024-05-02 14:53:11 - pymongo.command - DEBUG: {"clientId": {"$oid": "6633e117134385eb90654dc0"}, "message": "Command succeeded", "durationMS": 0.51, "reply": "{\"ok\": 1.0}", "commandName": "endSessions", "databaseName": "admin", "requestId": 41, "operationId": 41, "driverConnectionId": 1, "serverConnectionId": 5, "serverHost": "localhost", "serverPort": 27017}
+2024-05-02 15:08:42 - discord.client - ERROR: Attempting a reconnect in 0.23s
+Traceback (most recent call last):
+  File "d:\Programming\bot\discord_bot\lib\site-packages\discord\client.py", line 659, in connect
+    await self.ws.poll_event()
+  File "d:\Programming\bot\discord_bot\lib\site-packages\discord\gateway.py", line 646, in poll_event
+    raise ConnectionClosed(self.socket, shard_id=self.shard_id, code=code) from None
+discord.errors.ConnectionClosed: Shard ID None WebSocket closed with 1000
+2024-05-02 15:08:43 - discord.gateway - INFO: Shard ID None has successfully RESUMED session e4329107fe3d1ccdbde334c886f5c4f5.
+2024-05-02 16:39:25 - discord.gateway - INFO: Shard ID None has successfully RESUMED session e4329107fe3d1ccdbde334c886f5c4f5.
+2024-05-02 17:29:36 - discord.gateway - INFO: Shard ID None has successfully RESUMED session e4329107fe3d1ccdbde334c886f5c4f5.
+2024-05-02 19:05:36 - discord.gateway - INFO: Shard ID None has successfully RESUMED session e4329107fe3d1ccdbde334c886f5c4f5.
+2024-05-02 19:44:59 - discord.gateway - INFO: Shard ID None has successfully RESUMED session e4329107fe3d1ccdbde334c886f5c4f5.
+2024-05-02 20:21:09 - discord.client - WARNING: PyNaCl is not installed, voice will NOT be supported
+2024-05-02 20:21:09 - discord.client - DEBUG: on_ready has successfully been registered as an event
+2024-05-02 20:21:09 - asyncio - DEBUG: Using proactor: IocpProactor
+2024-05-02 20:21:09 - discord.client - INFO: logging in using static token
+2024-05-02 20:21:10 - discord.gateway - INFO: Shard ID None has connected to Gateway (Session ID: b44e924be2d605af1c3349ba8278985e).
+2024-05-02 20:21:12 - root - DEBUG: Logged in as RpApp_Dev
+2024-05-02 20:21:13 - root - DEBUG: Loaded cogs.moderation
+2024-05-02 20:21:13 - root - DEBUG: Loaded cogs.characters
+2024-05-02 20:21:13 - root - DEBUG: Loaded cogs.combat
+2024-05-02 20:21:13 - root - DEBUG: Loaded cogs.economy
+2024-05-02 20:21:13 - root - DEBUG: Loaded cogs.interactions
+2024-05-02 20:21:13 - root - DEBUG: Loaded cogs.inventory
+2024-05-02 20:21:13 - root - DEBUG: Loaded cogs.life_actions
+2024-05-02 20:21:13 - root - DEBUG: Loaded cogs.quests
+2024-05-02 20:21:13 - root - DEBUG: Loaded cogs.skills
+2024-05-02 20:21:13 - root - DEBUG: Loaded cogs.utility
+2024-05-02 20:21:13 - root - DEBUG: Loaded cogs.groups
+2024-05-02 20:24:32 - discord.client - WARNING: PyNaCl is not installed, voice will NOT be supported
+2024-05-02 20:24:32 - discord.client - DEBUG: on_ready has successfully been registered as an event
+2024-05-02 20:24:32 - asyncio - DEBUG: Using proactor: IocpProactor
+2024-05-02 20:24:32 - discord.client - INFO: logging in using static token
+2024-05-02 20:24:33 - discord.gateway - INFO: Shard ID None has connected to Gateway (Session ID: 61a556dda0ec77f7160cb5dbea80da6d).
+2024-05-02 20:24:35 - root - DEBUG: Logged in as RpApp_Dev
+2024-05-02 20:24:35 - root - DEBUG: Loaded cogs.moderation
+2024-05-02 20:24:35 - root - DEBUG: Loaded cogs.characters
+2024-05-02 20:24:35 - root - DEBUG: Loaded cogs.combat
+2024-05-02 20:24:35 - root - DEBUG: Loaded cogs.economy
+2024-05-02 20:24:35 - root - DEBUG: Loaded cogs.interactions
+2024-05-02 20:24:47 - root - DEBUG: Loaded cogs.inventory
+2024-05-02 20:24:50 - root - DEBUG: Loaded cogs.life_actions
+2024-05-02 20:24:51 - root - DEBUG: Loaded cogs.quests
+2024-05-02 20:24:53 - root - DEBUG: Loaded cogs.skills
+2024-05-02 20:24:54 - root - DEBUG: Loaded cogs.utility
+2024-05-02 20:24:55 - root - DEBUG: Loaded cogs.groups
+2024-05-02 20:27:22 - discord.client - WARNING: PyNaCl is not installed, voice will NOT be supported
+2024-05-02 20:27:22 - discord.client - DEBUG: on_ready has successfully been registered as an event
+2024-05-02 20:27:22 - asyncio - DEBUG: Using proactor: IocpProactor
+2024-05-02 20:27:22 - discord.client - INFO: logging in using static token
+2024-05-02 20:27:23 - discord.gateway - INFO: Shard ID None has connected to Gateway (Session ID: 296772b0cf50e416accaa01f7bcc6f1e).
+2024-05-02 20:27:25 - root - DEBUG: Logged in as RpApp_Dev
+2024-05-02 20:27:25 - root - DEBUG: Loaded cogs.moderation
+2024-05-02 20:27:25 - root - DEBUG: Loaded cogs.characters
+2024-05-02 20:27:25 - root - DEBUG: Loaded cogs.combat
+2024-05-02 20:27:25 - root - DEBUG: Loaded cogs.economy
+2024-05-02 20:27:25 - root - DEBUG: Loaded cogs.interactions
+2024-05-02 20:27:27 - root - DEBUG: Loaded cogs.inventory
+2024-05-02 20:27:27 - root - DEBUG: Loaded cogs.life_actions
+2024-05-02 20:27:27 - root - DEBUG: Loaded cogs.quests
+2024-05-02 20:27:27 - root - DEBUG: Loaded cogs.skills
+2024-05-02 20:27:27 - root - DEBUG: Loaded cogs.utility
+2024-05-02 20:27:27 - root - DEBUG: Loaded cogs.groups
+2024-05-02 20:30:40 - root - INFO: Character data: {'discord_tag': 148296948703559681, 'guild_id': 962908877576351744}
+2024-05-02 20:41:10 - discord.gateway - INFO: Shard ID None has successfully RESUMED session 296772b0cf50e416accaa01f7bcc6f1e.
+2024-05-02 21:01:50 - discord.client - WARNING: PyNaCl is not installed, voice will NOT be supported
+2024-05-02 21:01:50 - discord.client - DEBUG: on_ready has successfully been registered as an event
+2024-05-02 21:01:50 - asyncio - DEBUG: Using proactor: IocpProactor
+2024-05-02 21:01:50 - discord.client - INFO: logging in using static token
+2024-05-02 21:01:51 - discord.gateway - INFO: Shard ID None has connected to Gateway (Session ID: 32549da97ae34c66c5b01cf45cecae61).
+2024-05-02 21:01:53 - root - DEBUG: Logged in as RpApp_Dev
+2024-05-02 21:01:53 - root - DEBUG: Loaded cogs.moderation
+2024-05-02 21:01:53 - root - DEBUG: Loaded cogs.characters
+2024-05-02 21:01:53 - root - DEBUG: Loaded cogs.combat
+2024-05-02 21:01:53 - root - DEBUG: Loaded cogs.economy
+2024-05-02 21:01:53 - root - DEBUG: Loaded cogs.interactions
+2024-05-02 21:01:53 - root - DEBUG: Loaded cogs.inventory
+2024-05-02 21:01:53 - root - DEBUG: Loaded cogs.life_actions
+2024-05-02 21:01:53 - root - DEBUG: Loaded cogs.quests
+2024-05-02 21:01:53 - root - DEBUG: Loaded cogs.skills
+2024-05-02 21:01:53 - root - DEBUG: Loaded cogs.utility
+2024-05-02 21:01:53 - root - DEBUG: Loaded cogs.groups
+2024-05-02 23:57:11 - discord.gateway - INFO: Shard ID None has successfully RESUMED session 32549da97ae34c66c5b01cf45cecae61.

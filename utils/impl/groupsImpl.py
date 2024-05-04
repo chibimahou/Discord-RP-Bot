@@ -2,12 +2,12 @@ import discord
 import logging
 from discord import app_commands
 from datetime import datetime
-from mysql.connector import Error
 from utils.functions.character_functions import (get_active_character, get_character_by_name, 
                                                  update_characters_party)
 from utils.functions.group_functions import (party_exists, create_party_document, send_invite, 
-                                             invite_exists, get_party, handle_invite_response,
+                                             get_party, handle_invite_response,
                                              leave_active_party, update_leader)
+from utils.functions.invite_functions import (invite_exists)
 from utils.functions.database_functions import (get_db_connection, close_db_connection)
 from utils.functions.utility_functions import (comment_wrap)
 
