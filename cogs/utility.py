@@ -8,6 +8,8 @@ from cryptography.fernet import Fernet
 from pymongo import MongoClient
 from config.config import (DB_NAME, DB_USERNAME, DB_PASSWORD, DB_HOST, URI)
 
+db_failure = "Failed to connect to the database."
+
 class utility(app_commands.Group):
     @app_commands.command()
     async def create_character(self, interaction: discord.Interaction):
@@ -150,7 +152,7 @@ def get_party_or_guild_id(invitors_name, invite_to):
 def is_user_in_a_party(user_id, guild_id):
     db = get_db_connection()
     if db is None:
-        logging.err("Failed to connect to the database.")
+        logging.err(db_failure)
         return False
     
     try:
@@ -211,7 +213,7 @@ def insert_invitation_into_db(guild_id, party_id, invitee):
         # Execute the query with the provided user_id and party_id
         cursor.callproc(stored_procedure_name, stored_procedure_parameters)
         connection.commit()
-        
+        return True
     except mysql.connector.Error as err:
         print(f"Error: {err}")
         return False
@@ -219,7 +221,6 @@ def insert_invitation_into_db(guild_id, party_id, invitee):
         # Close the cursor and connection
         cursor.close()
         connection.close()
-        return True
     
 def is_party_leader(character, guild_id):
     connection = get_db_connection()
@@ -252,7 +253,7 @@ def is_party_leader(character, guild_id):
 def select_new_leader(party_id):
     db = get_db_connection()
     if db is None:
-        print("Failed to connect to the database.")
+        print(db_failure)
         return
     
     try:
@@ -278,8 +279,8 @@ def select_new_leader(party_id):
 def remove_user_from_party(character_id, party_id):
     db = get_db_connection()
     if db is None:
-        print("Failed to connect to the database.")
-        return "Failed to connect to the database."
+        print(db_failure)
+        return db_failure
     
     try:
         # Convert string IDs to ObjectId if they're not already in that format
@@ -296,11 +297,9 @@ def remove_user_from_party(character_id, party_id):
         
         # Check if the update operation was successful
         if update_result.modified_count > 0:
-            print("User removed from party successfully.")
             return "User removed from party successfully."
         else:
-            print("Failed to remove user from party or user was not in party.")
-            return "Failed to remove user from party or user was not in party."
+            return db_failure
     except Exception as e:
         print(f"Error: {e}")
         return "Error removing user from party."
@@ -309,7 +308,6 @@ def remove_user_from_party(character_id, party_id):
 def add_guild(guild_id, guild_name):
     db = get_db_connection()
     if db is None:
-        print("Failed to connect to the database.")
         return
     
     try:
