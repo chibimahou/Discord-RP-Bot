@@ -7,7 +7,7 @@ from utils.impl.groupsImpl import (create_party_logic, party_invite_logic,
                                    accept_party_invite_logic, decline_party_invite_logic,
                                    leave_party_logic)
 
-class characters(app_commands.Group):
+class groups(app_commands.Group):
     # ______________________________________________________________________________________________________________________
     # send party invite
     # ______________________________________________________________________________________________________________________
@@ -86,4 +86,4 @@ class characters(app_commands.Group):
         await interaction.followup.send(results, ephemeral=True)
         
 async def setup(bot):
-    bot.tree.add_command(characters(name="groups", description="Managing player parties, guild and any group related feature."))
+    bot.tree.add_command(groups(name="groups", description="Managing player parties, guild and any group related feature."))

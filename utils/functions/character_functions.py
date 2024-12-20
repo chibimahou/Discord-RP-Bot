@@ -23,7 +23,8 @@ async def create_character_insert(character_data):
                         "bio": character_data["bio"],
                         "level": 1,
                         "experience": 0,
-                        "experience_to_next_level": 100
+                        "experience_to_next_level": 100,
+                        "instance": None,
                         },
     "inventory": {"equipment": [], 
                       "consumables": [], 
@@ -74,6 +75,7 @@ async def create_character_insert(character_data):
                 "damage": 10,
                 "defense": 10,
                 "current_hp": 10,
+                "initiative": 5,
                 },
     "player": {"discord_tag": character_data["discord_tag"],
                 "guild_id": character_data["guild_id"],
@@ -356,3 +358,14 @@ async def get_character_by_name(db, character_data):
             "character.characters_name": character_data['characters_name'],
             "player.guild_id": character_data["guild_id"]
         })
+    
+# Get a character by characters_name
+async def get_character_by_id(db, character_data, target_id):
+    return await db["characters"].find_one(
+        {
+            "_id": target_id,
+            "player.guild_id": character_data["guild_id"]
+        })
+    
+async def in_party(character_document):
+    return character_document['group']['party_id']

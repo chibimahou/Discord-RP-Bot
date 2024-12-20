@@ -77,7 +77,6 @@ class characters(app_commands.Group):
             "guild_id": interaction.guild.id       
         }
         # Fetch user data from the database
-        discord_tag = interaction.user.id          
         results = await active_logic(character_data)
         await interaction.response.send_message(results)
 

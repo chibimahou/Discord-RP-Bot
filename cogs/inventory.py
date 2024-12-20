@@ -4,10 +4,11 @@ from utils.impl.inventoryimpl import (add_logic, remove_logic, check_logic, equi
 
 class inventory(app_commands.Group):
     @app_commands.command()
-    async def add(self, interaction: discord.Interaction, item_name:str):
+    async def add(self, interaction: discord.Interaction, item_name:str, item_quantity:int):
         item_data = {
             "name": item_name.lower(),
-            "guild_id": interaction.guild.id
+            "guild_id": interaction.guild.id,
+            "quantity": item_quantity
 
         }
         character_data = {

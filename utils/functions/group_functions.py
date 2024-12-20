@@ -174,3 +174,8 @@ async def update_leader(db, party_document):
         {"_id": party_document['_id']},
         {"$set": {'party.members': party_document['party']['members']}}
     )
+    
+# ______________________________________________________________________________________________________________________
+# Description: Get the party data from the database
+# Return: Object
+# ______________________________________________________________________________________________________________________
