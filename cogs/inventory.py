@@ -15,7 +15,7 @@ class inventory(app_commands.Group):
             "discord_tag": interaction.user.id,
             "guild_id": interaction.guild.id
             }
-        results = await add_logic(interaction, character_data, item_data)
+        results = await add_logic(character_data, item_data)
         await interaction.response.send_message(results)
         
     @app_commands.command()
@@ -30,7 +30,7 @@ class inventory(app_commands.Group):
             "discord_tag": interaction.user.id,
             "guild_id": interaction.guild.id
             }
-        results = await remove_logic(interaction, character_data, item_data)
+        results = await remove_logic(character_data, item_data)
         await interaction.response.send_message(results)
         
     @app_commands.command()
@@ -39,7 +39,7 @@ class inventory(app_commands.Group):
             "discord_tag": interaction.user.id,
             "guild_id": interaction.guild.id
             }
-        results = await check_logic(interaction, character_data)
+        results = await check_logic(character_data)
         await interaction.response.send_message(results)
             
         

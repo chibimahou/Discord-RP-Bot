@@ -88,13 +88,13 @@ async def delete_character(db, character_data):
         delete_result = await db['characters'].delete_one(player_data)
         if delete_result.deleted_count > 0:
             logging.info("Character successfully deleted.")
-            return "Character successfully deleted!"
+            return "```Character successfully deleted!```"
         else:
             logging.info("Character not found or already deleted.")
-            return "Character not found or already deleted."
+            return "```Character not found or already deleted.```"
     except Exception as e:
         logging.exception(f"Error: {e}")
-        return "An error occurred while attempting to delete the character."
+        return "```An error occurred while attempting to delete the character.```"
         
 # Switch the active character for a user
 async def switch_active_character(db, character_data, character_documnent, new_characters_document):

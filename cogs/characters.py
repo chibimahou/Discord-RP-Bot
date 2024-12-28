@@ -39,7 +39,7 @@ class characters(app_commands.Group):
             "discord_tag": interaction.user.id,
             "guild_id": interaction.guild.id       
         }
-        results = await delete_logic(character_data, interaction)
+        results = await delete_logic(character_data)
         await interaction.response.send_message(results)
         
     # ______________________________________________________________________________________________________________________            

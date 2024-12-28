@@ -66,7 +66,7 @@ async def create_logic(character_data):
     finally:
         await close_db_connection(client)
                      
-async def delete_logic(character_data, interaction):
+async def delete_logic(character_data):
     # Validate the character name
     if not validate_alphanumeric(character_data.get("characters_name", "")):
         logging.info("Invalid character name.")
@@ -82,7 +82,7 @@ async def delete_logic(character_data, interaction):
         return message
     except Exception as e: 
         logging.exception(f"Unexpected error: {e}")
-        return "An unexpected error occurred."
+        return "```An unexpected error occurred.```"
     finally:
         await close_db_connection(client)
         
@@ -182,7 +182,7 @@ async def level_up_logic(character_data):
             logging.info("No characters found.")
             return await comment_wrap("No characters found.")
         status = await level_up(db, character_data, character_document)
-        return f"Level up! You are now level. You have 3 points to distribute."
+        return f"```Level up! You are now level. You have 3 points to distribute.```"
     except Exception as e:
         logging.exception(f"Unexpected error: {e}")
         return await comment_wrap("An unexpected error occurred.")
