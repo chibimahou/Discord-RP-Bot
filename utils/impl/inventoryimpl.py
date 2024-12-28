@@ -11,14 +11,14 @@ from utils.functions.validation_functions import (validate_alphanumeric, validat
 
 from pymongo import MongoClient
 
-def add_logic(interaction, characters_data, item_data):
+def add_logic(characters_data, item_data):
     message = add_item_to_inventory(characters_data, item_data)
     return message
 
-def remove_logic(interaction, characters_data, item_data):
+def remove_logic(characters_data, item_data):
     message = remove_item_from_inventory(characters_data, item_data)
     return message
 
-def check_logic(interaction, characters_data):
+def check_logic(characters_data):
     message = check_inventory(characters_data)
     return message
