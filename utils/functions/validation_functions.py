@@ -5,9 +5,33 @@ def validate_alphanumeric(input_str):
     pattern = re.compile(r'^\w+$')
     return bool(pattern.match(input_str))
 
-def validate_height(input_str):
-    pattern = re.compile(r"^\d+'\d+\"$")
-    return bool(pattern.match(input_str))
+def parse_height(input_str):
+    patterns = [
+        re.compile(r"^(?P<feet>\d+)'(?P<inches>\d+)\"$"),  # 5'10"
+        re.compile(r"^(?P<feet>\d+)' (?P<inches>\d+)\"$"),  # 5' 10"
+        re.compile(r"^(?P<feet>\d+)ft (?P<inches>\d+)in$"),  # 5ft 10in
+        re.compile(r"^(?P<inches>\d+)\"$"),  # 70"
+        re.compile(r"^(?P<inches>\d+)in$"),  # 70in
+        re.compile(r"^(?P<cm>\d+)cm$"),  # 180cm
+        re.compile(r"^(?P<cm>\d+) cm$"),  # 180 cm
+    ]
+    
+    for pattern in patterns:
+        match = pattern.match(input_str)
+        if match:
+            if 'feet' in match.groupdict() and 'inches' in match.groupdict():
+                feet = int(match.group('feet'))
+                inches = int(match.group('inches'))
+                total_inches = feet * 12 + inches
+                return total_inches  # or return as a tuple (feet, inches)
+            elif 'inches' in match.groupdict():
+                return int(match.group('inches'))
+            elif 'cm' in match.groupdict():
+                cm = int(match.group('cm'))
+                inches = cm / 2.54
+                return round(inches)  # or return cm if you prefer
+    raise ValueError(f"Height format for '{input_str}' is not supported.")
+
 
 def validate_age(input_str):
     return input_str.isdigit()
