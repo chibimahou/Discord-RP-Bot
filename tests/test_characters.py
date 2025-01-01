@@ -51,7 +51,7 @@ class TestCreateCharacterLogic(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result_2, "```Character successfully deleted!```")
 
     # Test 2: Valid character data
-    async def test_create_character_logic_success(self):
+    async def test_create_character_logic_setup(self):
         # Explicitly setting return values for this test case for clarity
         self.mock_get_db_connection.return_value = (AsyncMock(), AsyncMock())  # Simulating DB connection
         self.mock_create_character.return_value = "Character created successfully."
