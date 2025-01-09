@@ -1,7 +1,7 @@
 import discord
 from discord import app_commands
 from datetime import datetime
-from utils.impl.modImpl import (create_mob_logic)
+from utils.impl.modImpl import (create_mob_logic, create_buff_logic, delete_buff_logic)
 from utils.functions.utility_functions import has_required_role
 
 class mod(app_commands.Group):
@@ -54,5 +54,65 @@ class mod(app_commands.Group):
 
     #_______________________________________________________
 
+    @app_commands.command()
+    @app_commands.describe(name="strength boost", description = "increases strength and dexterity at the cost of speed and charisma",
+                           stat_1 = "strength", operation_1 = "add", 
+                           value_1 = 5, activates_1 = "per turn", stat_2 = "dexterity", 
+                           operation_2 = "subtract", value_2 = 5, activates_2 = "permenant",
+                           debuff_stat_1 = "speed", debuff_operation_1 = "subtract", 
+                           debuff_value_1 = 5, debuff_activates_1 = "permenant",
+                           debuff_stat_2 = "charisma", debuff_operation_2 = "subtract",
+                           debuff_value_2 = 5, debuff_activates_2 = "permenant")
+    async def create_buff(self, interaction: discord.Interaction,  user: discord.Member, 
+                          name:str, description: str, stat_1: str, operation_1: str, value_1: int, activates_1: str,
+                          stat_2: str, operation_2: str, value_2: int, activates_2: str,
+                          debuff_stat_1: str, debuff_operation_1: str, debuff_value_1: int, 
+                          debuff_activates_1: str, debuff_stat_2: str, debuff_operation_2: str,
+                          debuff_value_2: int, debuff_activates_2: str):          
+        authorized = await has_required_role(user)
+        if(authorized):
+            buff_data = {
+                "name": name.lower(),
+                "description": description,
+                "stat_1": stat_1,
+                "operation_1": operation_1,
+                "value": value_1,
+                "activates_1": activates_1,
+                "stat_2": stat_2,
+                "operation_2": operation_2,
+                "value_2": value_2,
+                "activates_2": activates_2,
+                "debuff_stat_1": debuff_stat_1,
+                "debuff_operation_1": debuff_operation_1,
+                "debuff_value_1": debuff_value_1,
+                "debuff_activates_1": debuff_activates_1,
+                "debuff_stat_2": debuff_stat_2,
+                "debuff_operation_2": debuff_operation_2,
+                "debuff_value_2": debuff_value_2,
+                "debuff_activates_2": debuff_activates_2,
+                "guild_id": interaction.guild_id,
+                "inserted_by": interaction.user.id,
+                "insertion_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
+            }
+            results = await create_buff_logic(buff_data)
+        else:
+            results = "You are not authorized to perform this action."
+        await interaction.response.send_message(results)
+    #_______________________________________________________
+
+    @app_commands.command()
+    @app_commands.describe(name="strength boost")
+    async def delete_buff(self, interaction: discord.Interaction,  user: discord.Member, 
+                          name:str):          
+        authorized = await has_required_role(user)
+        if(authorized):
+            buff_data = {
+                "name": name.lower(),
+                "guild_id": interaction.guild_id
+            }
+            results = await delete_buff_logic(buff_data)
+        else:
+            results = "You are not authorized to perform this action."
+        await interaction.response.send_message(results)
 async def setup(bot):
     bot.tree.add_command(mod(name="mod", description="Moderator functions."))

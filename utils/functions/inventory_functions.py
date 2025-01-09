@@ -17,7 +17,7 @@ async def add_item_to_inventory(character_data, item_data):
         character_document = await get_active_character(db, character_data)
         if not character_document:
             return f"Character not found."
-        item_document = await get_item(db, item_data)
+        item_document = await get_item(db, item_data["identifier", character_data["guild_id"]])
         if not item_document:
             return f"Item not found."
         logging.info(f"Item found: {item_document['name']}")
@@ -58,7 +58,7 @@ async def remove_item_from_inventory(character_data, item_data):
         if not character_document:
             return f"Character not found."
         
-        item_document = await get_item(db, item_data)
+        item_document = await get_item(db, item_data["identifier"], character_data["guild_id"])
         if not item_document:
             return f"Item not found."
         
