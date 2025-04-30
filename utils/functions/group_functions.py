@@ -2,7 +2,6 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import logging
 from config.config import (DB_NAME, DB_USERNAME, DB_PASSWORD, DB_HOST, URI)
 from utils.functions.database_functions import get_db_connection, close_db_connection
-from utils.functions.character_functions import active_character
 
 # Groups
 #_______________________________________________________________________________________________________________________
@@ -19,8 +18,8 @@ async def create_party_document(party_data, character_document):
             "leader_id": character_document['_id'],  # Assuming interaction has a user attribute
             "members": [
                 {
-                    "user_id": character_document['_id'],  # Leader's user ID
-                    "username": character_document['character']['characters_name'],  # Leader's usernameF
+                    "members_id": character_document['members_id'],  # member's user ID
+                    "username": character_document['character']['characters_name'],  # members's username
                     "role": "Leader"
                 }
             ],
@@ -31,16 +30,15 @@ async def create_party_document(party_data, character_document):
                 "loot_distribution": party_data.get("loot_distribution", "Equal"),
                 "experience_sharing": party_data.get("experience_sharing", True),
                 "max_members": party_data.get("max_members", 5),
-                "guild_id": party_data["guild_id"]
             }
         },
         "activities": {
             "completed": [],
             "in_progress": []
         },
-        "chat": {
-            "messages": []
-        },
+        "misc": {
+            "guild_id": party_data["guild_id"]
+    }
     }
     return party_insert
 
@@ -190,3 +188,11 @@ async def update_leader(db, party_document):
         {"_id": party_document['_id']},
         {"$set": {'party.members': party_document['party']['members']}}
     )
+# ______________________________________________________________________________________________________________________            
+# Gets a list of the party members for an active character
+# Return: List
+# ______________________________________________________________________________________________________________________   
+      
+async def get_party_members(db, party_id):
+    party_document = get_party(db, party_id)
+    return party_document['party']['members']

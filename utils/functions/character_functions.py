@@ -1,5 +1,6 @@
 import logging
 import math
+from utils.functions.group_functions import get_party_members
 from utils.functions.database_functions import get_db_connection, close_db_connection
 # Characters
 #_______________________________________________________________________________________________________________________
@@ -29,7 +30,8 @@ async def create_character_insert(character_data):
                         "bio": character_data["bio"],
                         "level": 1,
                         "experience": 0,
-                        "experience_to_next_level": 100
+                        "experience_to_next_level": 100,
+                        "instance": None,
                         },
     "inventory": {"equipment": [], 
                       "consumables": [], 
@@ -45,8 +47,8 @@ async def create_character_insert(character_data):
                       "accessory2": None,
                       "left_hand": None,
                       "right_hand": None},
-    "group": {"guild": None,
-                "party": None},
+    "group": {"guild_id": None,
+                "party_id": None},
     "stats": {  "hp": 10,
                 "str": 5,
                 "def": 5,
@@ -60,6 +62,7 @@ async def create_character_insert(character_data):
                 "damage": 10,
                 "defense": 10,
                 "current_hp": 10,
+                "initiative": 3
                 },
     "player": {"discord_tag": character_data["discord_tag"],
                    "guild_id": character_data["guild_id"],
@@ -364,3 +367,28 @@ async def get_character_by_name(db, character_data):
             "character.characters_name": character_data['characters_name'],
             "player.guild_id": character_data["guild_id"]
         })
+    
+# Check if a character is busy
+async def check_if_players_busy(character_document):
+    player_activity_status = character_document["character"]["instance"]
+    if player_activity_status is not None:
+        return True
+    return False
+
+# Check if a party members are busy
+async def check_if_parties_busy(db, character_document):
+    party_members = await get_party_members(db, character_document["group"]["party_id"])
+    for member in party_members:
+        character_data = create_player_data(member["discord_tag"], member["guild_id"])
+        player_character_document = await get_active_character(db, character_data)
+        player_busy = await check_if_players_busy(player_character_document)
+        if player_busy:
+            return False
+    return True
+
+async def create_player_data(discord_tag, guild_id):
+    character_data = {
+        "discord_tag": discord_tag,
+        "guild_id": guild_id
+    }
+    return character_data

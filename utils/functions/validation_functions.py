@@ -6,7 +6,7 @@ def validate_alphanumeric(input_str):
     pattern = re.compile(r'^\w+$')
     return bool(pattern.match(input_str))
 
-def parse_height(input_str):
+def validate_height(input_str):
     patterns = [
         re.compile(r"^(?P<feet>\d+)'(?P<inches>\d+)\"$"),  # 5'10"
         re.compile(r"^(?P<feet>\d+)' (?P<inches>\d+)\"$"),  # 5' 10"
@@ -63,3 +63,40 @@ def validate_text(input_str):
 
 def validate_level(input_str):
     return input_str.isdigit() and int(input_str) >= 0
+
+# Database Validations
+async def validate_exists(db, entity_type, entity_data):
+    if entity_type == "character":
+        return await validate_character_exists(db, entity_data)
+    elif entity_type == "item":
+        return await validate_item_exists(db, entity_data)
+    # Add more entity types as needed
+    else:
+        raise ValueError(f"Unknown entity type: {entity_type}")
+    
+async def validate_character_exists(db, character_data):
+    character = await db['characters'].find_one({
+        "misc.discord_tag": character_data["discord_tag"],
+        "character.active": True})
+    return character is not None
+
+async def validate_item_exists(db, item_data):
+    item = await db['items'].find_one({
+        "item.name": item_data["name"]})
+    return item is not None
+
+async def validate_mobs_exists(db, item_data):
+    item = await db['mobs'].find_one({
+        "mob.name": item_data["name"]})
+    return item is not None
+
+async def validate_party_exists(db, item_data):
+    item = await db['party'].find_one({
+        "party.party_id": item_data["party_id"]})
+    return item is not None
+
+async def validate_guild_exists(db, item_data):
+    item = await db['guild'].find_one({
+        "guild.guild_id": item_data["guild_id"]})
+    return item is not None
+
