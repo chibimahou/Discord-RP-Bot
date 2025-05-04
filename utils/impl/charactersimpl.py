@@ -100,10 +100,13 @@ async def switch_active_logic(character_data):
     
     try:
         character_document = await active_character(db, character_data)
-        new_characters_document = await get_character_by_name(db, character_data)
         if character_document is None:
             logging.info("No characters found.")
             return await comment_wrap("No characters found.")
+        new_characters_document = await get_character_by_name(db, character_data)
+        if(character_document['character']['characters_name'] == new_characters_document['character']['characters_name']):
+            logging.info("Character is already active.")
+            return await comment_wrap("Character is already active.")
         status = await switch_active_character(db, character_data, character_document, new_characters_document)
         if status:
             return await comment_wrap(f"Active character switched to {character_data['characters_name']}!")

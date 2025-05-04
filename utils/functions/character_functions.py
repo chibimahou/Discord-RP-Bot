@@ -4,15 +4,18 @@ from utils.functions.database_functions import get_db_connection, close_db_conne
 # Characters
 #_______________________________________________________________________________________________________________________
 
-def construct_player_data(character_data, include_active=False):
+def construct_player_data(character_data, include_active=False, characters_name=None):
     fields_to_check = ['discord_tag', 'guild_id']
-    if include_active:
-        fields_to_check.append('active')
-    return {
+    query = {
         f"player.{field}": character_data[field]
         for field in fields_to_check
         if field in character_data
     }
+    if include_active:
+        query["player.active"] = True
+    if characters_name:
+        query["character.characters_name"] = characters_name
+    return query
     
 # add character data to an object
 async def create_character_insert(character_data):
@@ -84,7 +87,14 @@ async def active_character(db, character_data):
 # Delete a character from the database
 async def delete_character(db, character_data):
     try:
-        player_data = construct_player_data(character_data, include_active=True)
+        player_data = construct_player_data(character_data, False, character_data['characters_name'])
+        character_document = await db['characters'].find_one(player_data)
+        if not character_document:
+            logging.info("Character not found or already deleted.")
+            return "```Character not found or already deleted.```"
+        if character_document.get("player", {}).get("active", False):
+            logging.info("Cannot delete an active character.")
+            return "```Cannot delete an active character. Please switch to another character before deleting.```"
         delete_result = await db['characters'].delete_one(player_data)
         if delete_result.deleted_count > 0:
             logging.info("Character successfully deleted.")
@@ -174,9 +184,9 @@ async def add_points_to_stat(db, character_data):
                 # If the update was successful, update the corresponding stat
                 if (update.modified_count > 0):
                     logging.debug(f"Stat: {character_document['stats'][converted_stat_name]} updated to {updated_stat_value} for {character_data['discord_tag']}")
-                    # message = await update_combat(converted_stat_name, updated_stat_value, character_document["stats"][converted_stat_name], "add", character_data['discord_tag'], converted_stat_name['guild_id']) 
-                logging.info(f"{character_data['stat_value']} point(s) added to {converted_stat_name} for {character_data['discord_tag']}")
-                return f"{character_data['stat_value']} point(s) added to {converted_stat_name} for {character_data['discord_tag']}"
+                    # message = await update_combat(converted_stat_name, updated_stat_value, character_document["stats"][converted_stat_name], "add", character_data['discord_tag'], converted_stat_name['guild_id'])
+                logging.info(f"{character_data['stat_value']} point(s) added to {converted_stat_name} for player {character_document['character']['characters_name']}.\nStat points remaining: {stat_points_left}")
+                return f"{character_data['stat_value']} point(s) added to {converted_stat_name} for player {character_document['character']['characters_name']}.\nStat points remaining: {stat_points_left}"
             else:
                 return f"You do not have enough stat points to distribute. Stat points remaining: {character_document['stats']['points_to_distribute']}"
 
